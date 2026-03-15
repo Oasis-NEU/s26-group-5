@@ -1,0 +1,37 @@
+.box {
+    background-color:aliceblue;
+    padding: 1em;
+    width: 10em;
+    height: 10em;
+}
+
+.container {
+    display: flex;
+}
+
+.box1, .box2 {
+    flex: 1;
+    background-color:aliceblue;
+    padding: 1em;
+    width: 15em;
+    height: 15em;
+}
+
+
+.arrows {
+    height: 8em;
+    padding: 1em;
+    padding-top: 5em;
+}
+
+.button {
+    padding-top: 3em;
+}
+
+.confirm {
+    font-size: 1.5em;
+}
+
+h3 {
+    color: black;
+}
