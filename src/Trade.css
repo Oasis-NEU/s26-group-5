@@ -1,37 +1,253 @@
-.box {
-    background-color:aliceblue;
-    padding: 1em;
-    width: 10em;
-    height: 10em;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
+
+body {
+    background-color: #0f0f13;
+    font-family: 'Segoe UI', sans-serif;
+    color: #e8e8f0;
+}
+
+/* ── page ─────────────────────────────────── */
+
+.trade-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6rem 1.5rem 3rem;
+    gap: 2rem;
+}
+
+.trade-header {
+    width: 100%;
+    text-align: center;
+}
+
+.trade-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: lowercase;
+    color: #c9b8ff;
+}
+
+/* ── main row ─────────────────────────────── */
 
 .container {
     display: flex;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+    max-width: 200rem;
 }
 
-.box1, .box2 {
+/* ── shelf panels ─────────────────────────── */
+
+.shelf-wrapper {
     flex: 1;
-    background-color:aliceblue;
-    padding: 1em;
-    width: 15em;
-    height: 15em;
+    min-width: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: #18181f;
+    border: 1px solid #2e2e40;
+    border-radius: 16px;
+    padding: 1.5rem 1.5rem 1.2rem;
+    min-height: 320px;
 }
 
+.shelf-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: lowercase;
+    color: #888;
+    align-self: flex-start;
+    padding-left: 0.3rem;
+}
+
+/* ── book stack ───────────────────────────── */
+
+.shelf {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 170px;
+}
+
+.book-slot {
+    position: absolute;
+    width: 110px;
+    height: 160px;
+    transform: translateX(calc((var(--i) - (var(--total) - 1) / 2) * 28px))
+               rotate(calc((var(--i) - (var(--total) - 1) / 2) * 4deg));
+    z-index: calc(var(--i) + 1);
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
+    opacity: 1;
+}
+
+.book-slot[data-hovered='true'] {
+    transform: translateX(calc((var(--i) - (var(--total) - 1) / 2) * 28px))
+               rotate(0deg)
+               scale(1.18)
+               translateY(-12px);
+    z-index: 50;
+}
+
+.book-slot[data-dimmed='true'] {
+    opacity: 0.35;
+}
+
+.book-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 4px 4px 18px rgba(0, 0, 0, 0.6);
+    display: block;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.remove-btn img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+}
+
+.book-slot[data-hovered='true'] .remove-btn {
+    opacity: 1;
+}
+
+.empty-hint {
+    font-size: 0.8rem;
+    color: #444;
+    letter-spacing: 0.08em;
+}
+
+/* ── add book controls ────────────────────── */
+
+.add-btn {
+    background: transparent;
+    border: 1px solid #3a3a55;
+    color: #a89fd8;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    padding: 0.42rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.add-btn:hover {
+    background: #25253a;
+    border-color: #6a5fff;
+}
+
+.add-input-row {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.add-input {
+    flex: 1;
+    background: #0f0f18;
+    border: 1px solid #3a3a55;
+    border-radius: 8px;
+    color: #e8e8f0;
+    font-size: 0.78rem;
+    padding: 0.42rem 0.8rem;
+    outline: none;
+    min-width: 0;
+    transition: border-color 0.2s;
+}
+
+.add-input:focus {
+    border-color: #6a5fff;
+}
+
+.confirm-add {
+    color: #9dffc0;
+    border-color: #2a5040;
+}
+
+.confirm-add:hover {
+    background: #1a3028;
+    border-color: #3dff90;
+}
+
+.cancel-add {
+    color: #ff9d9d;
+    border-color: #502a2a;
+}
+
+.cancel-add:hover {
+    background: #301818;
+    border-color: #ff5555;
+}
+
+/* ── arrows ───────────────────────────────── */
+
+.arrows-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
 
 .arrows {
-    height: 8em;
-    padding: 1em;
-    padding-top: 5em;
+    height: 60px;
+    opacity: 0.55;
+    filter: invert(1);
 }
 
+/* ── confirm button ───────────────────────── */
+
 .button {
-    padding-top: 3em;
+    display: flex;
+    justify-content: center;
 }
 
 .confirm {
-    font-size: 1.5em;
+    background: linear-gradient(135deg, #6a5fff, #a259ff);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 0.75rem 2.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(106, 95, 255, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-h3 {
-    color: black;
+.confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(106, 95, 255, 0.55);
+}
+
+.confirm:active {
+    transform: translateY(0);
 }
