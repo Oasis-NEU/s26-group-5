@@ -6,13 +6,19 @@ import Navbar from "../components/Navbar";
 
 function PublicLayout() {
   return (
-    <>
+    <div style={styles.pageShell}>
       <Navbar />
       <main>
         <Outlet />
       </main>
-    </>
+    </div>
   );
 }
+
+const styles = {
+  pageShell: {
+    width: "100%",
+  },
+};
 
 export default PublicLayout;

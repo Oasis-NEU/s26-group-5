@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PublicLayout from "./layouts/PublicLayout";
 import AuthLayout from "./layouts/AuthLayout";
+import HomePage from "./pages/HomePage";
+import BookDetailsPage from "./pages/BookDetailsPage";
 
 function PlaceholderPage({ title }) {
   return (
@@ -18,8 +20,9 @@ function App() {
 
         {/*Navbar pages*/}
         <Route element={<PublicLayout/>}>
-          <Route path="/"       element={<PlaceholderPage title="Home" />} />
+          <Route path="/"       element={<HomePage />} />
           <Route path="/browse" element={<PlaceholderPage title="Browse" />} />
+          <Route path="/books/:bookId" element={<BookDetailsPage />} />
         </Route>
 
         {/*Non navbar pages*/}

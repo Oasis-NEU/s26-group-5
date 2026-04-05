@@ -50,7 +50,7 @@ export default function Navbar() {
 
           {/* My Library */}
           <button style={styles.iconBtn} title="My Library">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
             </svg>
@@ -58,14 +58,13 @@ export default function Navbar() {
 
           {/* Cart */}
           <button style={styles.iconBtn} title="Cart">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
               <line x1="3" y1="6" x2="21" y2="6"/>
               <path d="M16 10a4 4 0 01-8 0"/>
             </svg>
           </button>
 
-          {/* Log In — plain text link style like Pangobooks */}
           <button style={styles.loginBtn}>
             Log In
           </button>
@@ -101,28 +100,28 @@ export default function Navbar() {
 
 const styles = {
   wrapper: {
-    fontFamily: "'Segoe UI', system-ui, sans-serif",
+    fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
     backgroundColor: "#fff",
     borderBottom: "1px solid #e5e5e5",
     userSelect: "none",
-    padding: "0 8vw",
+    padding: "0 11vw",
   },
   topRow: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "24px 0",
-    gap: "28px",
+    padding: "2vh 0 1vh 0",
+    gap: "3vw",
   },
   logo: {
     display: "flex",
     alignItems: "center",
-    gap: "9px",
+    gap: "0.5vw",
   },
   logoIcon: {
     width: "44px",
     height: "44px",
-    borderRadius: "15px",
+    borderRadius: "20px",
     color: "#fff",
     fontWeight: "800",
     fontSize: "24px",
@@ -131,10 +130,13 @@ const styles = {
     justifyContent: "center",
   },
   logoText: {
-    fontSize: "30px",
-    fontWeight: "700",
+    fontFamily: "'Boldonse', 'Open Sans', sans-serif",
+    display: "flex",
+    alignItems: "center",
+    fontSize: "24px",
     color: "#111",
-    letterSpacing: "-0.4px",
+    letterSpacing: "-1px",
+    padding: "3px 0 0 0",
   },
   searchBar: {
     display: "flex",
@@ -143,10 +145,10 @@ const styles = {
     borderRadius: "15px",
     overflow: "hidden",
     backgroundColor: "#fff",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
   },
   searchInput: {
     flex: 1,
+    fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
     padding: "18px 22px",
     border: "none",
     outline: "none",
@@ -155,7 +157,7 @@ const styles = {
     backgroundColor: "transparent",
   },
   searchBtn: {
-    padding: "0 20px",
+    padding: "0 15px",
     border: "none",
     cursor: "pointer",
     display: "flex",
@@ -166,26 +168,28 @@ const styles = {
   actions: {
     display: "flex",
     alignItems: "center",
-    gap: "20px",
+    gap: "1.5vw",
   },
   sellBtn: {
     backgroundColor: THEME,
+    fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
     color: "#fff",
     border: "none",
-    borderRadius: "15px",
-    padding: "12px 26px",
-    fontSize: "20px",
+    borderRadius: "12px",
+    padding: "12px 22px",
+    fontSize: "18px",
     fontWeight: "700",
     cursor: "pointer",
     whiteSpace: "nowrap",
   },
   exchangeBtn: {
     backgroundColor: THEME,
+    fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
     color: "#fff",
     border: "none",
-    borderRadius: "15px",
-    padding: "12px 26px",
-    fontSize: "20px",
+    borderRadius: "12px",
+    padding: "12px 22px",
+    fontSize: "18px",
     fontWeight: "700",
     cursor: "pointer",
     whiteSpace: "nowrap",
@@ -201,11 +205,13 @@ const styles = {
     color: "#333",
   },
   loginBtn: {
-    padding: "11px 26px",
-    borderRadius: "15px",
+    fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
+    padding: "12px 22px",
+    borderRadius: "12px",
     backgroundColor: "transparent",
+    border: "3px solid #44474a",
     cursor: "pointer",
-    fontSize: "20px",
+    fontSize: "18px",
     fontWeight: "600",
     whiteSpace: "nowrap",
   },
@@ -218,29 +224,31 @@ const styles = {
   genreGroup: {
     display: "flex",
     alignItems: "center",
-    gap: "0px",
+    gap: "0.5vw",
   },
   genreBtn: {
     background: "none",
+    fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
     border: "none",
     borderBottom: "2px solid transparent",
     cursor: "pointer",
     padding: "20px 20px",
-    fontSize: "20px",
+    fontSize: "18px",
     color: "#374151",
-    fontWeight: "500",
+    fontWeight: "400",
     whiteSpace: "nowrap",
   },
   moreBtn: {
     display: "flex",
     alignItems: "center",
     background: "none",
+    fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
     border: "none",
     cursor: "pointer",
     padding: "15px 20px",
-    fontSize: "20px",
+    fontSize: "18px",
     color: "#374151",
-    fontWeight: "500",
+    fontWeight: "400",
     whiteSpace: "nowrap",
   },
 };
