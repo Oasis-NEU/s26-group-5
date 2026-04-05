@@ -6,6 +6,6 @@ import Trade from './Trade.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Trade />
-  </StrictMode>,
+    <App />
+  </StrictMode>
 )
