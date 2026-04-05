@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import './Trade.css'
-import topArrow from './assets/top_arrow.png'
-import bottomArrow from './assets/bottom_arrow.png'
-import removeIcon from './assets/remove.png'
+import './TradePage.css'
+import topArrow from '../assets/top_arrow.png'
+import bottomArrow from '../assets/bottom_arrow.png'
+import removeIcon from '../assets/remove.png'
 
 const PLACEHOLDER = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTMI5yf9vYw85Q9Qr4kI3HH-qHdza7Gzp5HQ&s'
 
@@ -62,7 +62,7 @@ function BookShelf({ books, onAdd, onRemove, label }) {
     )
 }
 
-function Trade() {
+export default function TradePage() {
     const [myBooks, setMyBooks] = useState([])
     const [theirBooks, setTheirBooks] = useState([])
     const [confirmed, setConfirmed] = useState(false)
@@ -102,5 +102,3 @@ function Trade() {
         </div>
     )
 }
-
-export default Trade

@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const GENRES = ["Nonfiction", "Horror", "Mystery", "Romance", "Sci-Fi", "Historical Fiction"];
 const THEME = "#c0392b";
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeGenre, setActiveGenre] = useState(null);
 
@@ -46,7 +48,7 @@ export default function Navbar() {
         {/* Actions */}
         <div style={styles.actions}>
           <button style={styles.sellBtn}>Sell Now</button>
-          <button style={styles.exchangeBtn}>Exchange</button>
+          <button style={styles.exchangeBtn} onClick={() => navigate("/trade")}>Exchange</button>
 
           {/* My Library */}
           <button style={styles.iconBtn} title="My Library">
