@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import './Trade.css'
-import arrows from './assets/arrows.png'
+import topArrow from './assets/top_arrow.png'
+import bottomArrow from './assets/bottom_arrow.png'
 import removeIcon from './assets/remove.png'
 
-const PLACEHOLDER = 'https://covers.openlibrary.org/b/id/8739161-L.jpg'
+const PLACEHOLDER = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTMI5yf9vYw85Q9Qr4kI3HH-qHdza7Gzp5HQ&s'
 
 function BookShelf({ books, onAdd, onRemove, label }) {
     const [hovered, setHovered] = useState(null)
@@ -64,6 +65,7 @@ function BookShelf({ books, onAdd, onRemove, label }) {
 function Trade() {
     const [myBooks, setMyBooks] = useState([])
     const [theirBooks, setTheirBooks] = useState([])
+    const [confirmed, setConfirmed] = useState(false)
 
     return (
         <div className="trade-page">
@@ -80,7 +82,8 @@ function Trade() {
                 />
 
                 <div className="arrows-col">
-                    <img src={arrows} className="arrows" alt="trade arrows" />
+                    <img src={topArrow} className={`arrow-top${confirmed ? ' arrow-top--fly' : ''}`} alt="top arrow" />
+                    <img src={bottomArrow} className={`arrow-bottom${confirmed ? ' arrow-bottom--fly' : ''}`} alt="bottom arrow" />
                 </div>
 
                 <BookShelf
@@ -92,7 +95,7 @@ function Trade() {
             </div>
 
             <div className="button">
-                <button className="confirm" onClick={() => alert('trade confirmed!')}>
+                <button className="confirm" onClick={() => setConfirmed(true)}>
                     confirm trade
                 </button>
             </div>
