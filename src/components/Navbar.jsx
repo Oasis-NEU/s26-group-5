@@ -107,6 +107,9 @@ const styles = {
     borderBottom: "1px solid #e5e5e5",
     userSelect: "none",
     padding: "0 11vw",
+    position: "sticky",
+    top: 0,
+    zIndex: 100,
   },
   topRow: {
     display: "flex",
