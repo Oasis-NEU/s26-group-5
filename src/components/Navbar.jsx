@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Auth from "./Auth";
 
 const GENRES = ["Nonfiction", "Horror", "Mystery", "Romance", "Sci-Fi", "Historical Fiction"];
 const THEME = "#c0392b";
@@ -8,6 +9,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeGenre, setActiveGenre] = useState(null);
+  const [showLogin, setShowLogin] = useState(false);
 
   function handleSearch() {
     console.log("Searching for:", searchQuery);
@@ -23,7 +25,7 @@ export default function Navbar() {
       <div style={styles.topRow}>
 
         {/* Logo */}
-        <div style={styles.logo}>
+        <div style={styles.logo} onClick={() => navigate("/")} role="button" tabIndex={0}>
           <div style={{ ...styles.logoIcon, backgroundColor: THEME }}>B</div>
           <span style={styles.logoText}>BookX</span>
         </div>
@@ -51,7 +53,7 @@ export default function Navbar() {
           <button style={styles.exchangeBtn} onClick={() => navigate("/trade")}>Exchange</button>
 
           {/* My Library */}
-          <button style={styles.iconBtn} title="My Library">
+          <button style={styles.iconBtn} title="My Library" onClick={() => navigate("/library")}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
@@ -67,9 +69,12 @@ export default function Navbar() {
             </svg>
           </button>
 
-          <button style={styles.loginBtn}>
-            Log In
-          </button>
+          <div style={{ position: "relative" }}>
+            <button style={styles.loginBtn} onClick={() => setShowLogin((v) => !v)}>
+              Log In
+            </button>
+            {showLogin && <Auth onClose={() => setShowLogin(false)} />}
+          </div>
         </div>
       </div>
 
@@ -122,6 +127,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "0.5vw",
+    cursor: "pointer",
   },
   logoIcon: {
     width: "44px",

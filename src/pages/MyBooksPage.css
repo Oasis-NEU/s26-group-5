@@ -1,20 +1,9 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
+/* ── Library Page ─────────────────────────────────────────── */
+.lib-page {
   min-height: 100vh;
   background: #f0e9df;
   font-family: "Georgia", serif;
   color: #2c1f0e;
-  display: block;
-}
-
-/* ── Library Page ─────────────────────────────────────────── */
-.lib-page {
-  min-height: 100vh;
 }
 
 /* ── Header ───────────────────────────────────────────────── */

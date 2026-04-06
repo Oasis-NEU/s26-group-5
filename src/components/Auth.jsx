@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "./supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 
 export default function Auth({ onClose }) {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -121,7 +121,7 @@ const styles = {
     borderRadius: 10,
     boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
     padding: 20,
-    zIndex: 100,
+    zIndex: 200,
   },
   header: {
     display: "flex",

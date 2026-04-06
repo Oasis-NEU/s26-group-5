@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "./supabaseClient";
-import Auth from "./Auth";
+import { supabase } from "../lib/supabaseClient";
+import Auth from "../components/Auth";
+import "./MyBooksPage.css";
 
 const CONDITIONS = ["Like New", "Good", "Acceptable"];
 const BOOKS_PER_SHELF = 12;
@@ -70,7 +71,7 @@ function computePopupStyle(rect) {
   return { top, left };
 }
 
-export default function MyBooks() {
+export default function MyBooksPage() {
   const [session, setSession] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(false);

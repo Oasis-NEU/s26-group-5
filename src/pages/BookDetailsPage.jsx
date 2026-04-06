@@ -86,7 +86,7 @@ export default function BookDetailsPage() {
 
 const styles = {
   page: {
-    padding: "2vh 0 3vh",
+    padding: "2vh 11vw 3vh",
   },
   layout: {
     display: "grid",
