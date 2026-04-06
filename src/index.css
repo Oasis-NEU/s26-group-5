@@ -1,3 +1,446 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: #f0e9df;
+  font-family: "Georgia", serif;
+  color: #2c1f0e;
+  display: block;
+}
+
+/* ── Library Page ─────────────────────────────────────────── */
+.lib-page {
+  min-height: 100vh;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.lib-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 48px;
+  background: #e8ddd0;
+  border-bottom: 1px solid #cfc0ae;
+}
+
+.lib-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #2c1f0e;
+}
+
+.lib-header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: relative;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.btn-primary {
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #3b2a1a;
+  color: #f9f3ea;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.btn-primary:hover {
+  background: #5a3e28;
+  border-color: transparent;
+}
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  padding: 8px 18px;
+  font-size: 14px;
+  background: transparent;
+  color: #6b4f2e;
+  border: 1px solid #c8b49a;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.btn-ghost:hover {
+  background: #e0d4c4;
+  border-color: #c8b49a;
+}
+
+/* ── Search Panel ─────────────────────────────────────────── */
+.lib-search-panel {
+  max-width: 660px;
+  margin: 28px auto;
+  padding: 24px;
+  background: #faf6f0;
+  border: 1px solid #d9ccbf;
+  border-radius: 12px;
+}
+
+.lib-search-panel h2 {
+  margin-bottom: 16px;
+  font-size: 1.05rem;
+  color: #2c1f0e;
+  font-weight: 700;
+}
+
+.search-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.search-row input[type="text"] {
+  flex: 1;
+  padding: 9px 12px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  outline: none;
+  font-family: inherit;
+  background: #fff;
+  color: #2c1f0e;
+}
+.search-row input[type="text"]:focus {
+  border-color: #a07850;
+}
+
+.result-list {
+  list-style: none;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+}
+
+.result-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+}
+.result-item:hover {
+  border-color: #a07850;
+}
+.result-item.selected {
+  border-color: #4f46e5;
+  background: #eef2ff;
+}
+
+.confirm-box {
+  margin-top: 12px;
+  padding: 16px;
+  background: #f7fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+}
+
+.condition-btns {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.condition-btn {
+  padding: 5px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #d9ccbf;
+  background: #f3ede4;
+  color: #4a3020;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.condition-btn:hover {
+  background: #e8ddd0;
+  border-color: #b0a090;
+}
+.condition-btn.active {
+  background: #3b2a1a;
+  color: #f9f3ea;
+  border-color: transparent;
+}
+
+.condition-hint {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 4px 0 14px;
+  font-style: italic;
+}
+
+.add-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.add-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.label-sm {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b4f2e;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BOOKCASE
+═══════════════════════════════════════════════════════════ */
+
+.lib-shelves {
+  padding: 40px 48px 60px;
+}
+
+/* Outer wrapper for centering */
+.bookcase-outer {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* The bookcase cabinet */
+.bookcase {
+  background: #2a1a0a;
+  border-radius: 6px 6px 4px 4px;
+  /* Thick side panels via padding */
+  padding: 0 18px;
+  /* Depth shadow */
+  box-shadow: 0 2px 0 #1a0c04, 4px 6px 0 #180b03,
+    0 28px 70px rgba(0, 0, 0, 0.45), 0 8px 24px rgba(0, 0, 0, 0.25);
+  /* overflow: visible so popup cards can escape the cabinet top */
+  overflow: visible;
+  position: relative;
+}
+
+/* Top crown rail */
+.bookcase-crown {
+  height: 22px;
+  margin: 0 -18px;
+  background: linear-gradient(180deg, #4a2e14 0%, #3a2010 50%, #2a1a0a 100%);
+  border-radius: 6px 6px 0 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+.bookcase-crown::before {
+  content: "";
+  position: absolute;
+  inset: 4px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Bottom base rail */
+.bookcase-base {
+  height: 24px;
+  margin: 0 -18px;
+  background: linear-gradient(180deg, #2a1a0a 0%, #3a2010 40%, #4a2e14 100%);
+  border-radius: 0 0 4px 4px;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Each shelf row inside the bookcase */
+.bookcase-row {
+  position: relative;
+  overflow: visible;
+}
+
+/* The back wall + interior of each shelf */
+.shelf-interior {
+  /* Warm off-white back wall */
+  background: linear-gradient(180deg, #f2e8d8 0%, #ede0cc 100%);
+  min-height: 200px;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px 8px 0;
+  gap: 2px;
+  overflow: visible;
+  position: relative;
+  /* Inset shadow on left/right to simulate depth inside the cabinet */
+  box-shadow: inset 10px 0 20px rgba(0, 0, 0, 0.12),
+    inset -10px 0 20px rgba(0, 0, 0, 0.12),
+    inset 0 12px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* The wooden shelf plank */
+.shelf-plank {
+  height: 18px;
+  background: linear-gradient(
+    180deg,
+    #d4994a 0%,
+    #b07830 35%,
+    #8a5c18 70%,
+    #6a4410 100%
+  );
+  /* Subtle wood grain lines */
+  background-image: linear-gradient(
+      180deg,
+      #d4994a 0%,
+      #b07830 35%,
+      #8a5c18 70%,
+      #6a4410 100%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 80px,
+      rgba(0, 0, 0, 0.03) 80px,
+      rgba(0, 0, 0, 0.03) 81px
+    );
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 2;
+}
+/* Shelf front edge highlight */
+.shelf-plank::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #5a3810;
+  border-radius: 0 0 2px 2px;
+}
+
+/* Empty shelf message */
+.shelf-empty-msg {
+  color: #c0a882;
+  font-size: 13px;
+  font-style: italic;
+  align-self: center;
+  padding: 0 8px;
+  user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BOOK SPINE
+═══════════════════════════════════════════════════════════ */
+
+.book {
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  /* perspective for subtle 3-D tilt when rising */
+  perspective: 500px;
+}
+
+.book-spine {
+  border-radius: 2px 2px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  /* Phase 1: spring rise */
+  transition: transform 0.32s cubic-bezier(0.34, 1.6, 0.64, 1),
+    box-shadow 0.28s ease;
+  box-shadow: -3px 0 6px rgba(0, 0, 0, 0.28),
+    inset -6px 0 12px rgba(0, 0, 0, 0.2),
+    inset 2px 0 5px rgba(255, 255, 255, 0.07);
+}
+
+/* Spine binding ridge */
+.book-spine::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.04));
+  border-radius: 2px 0 0 0;
+}
+
+/* Subtle top edge catch-light */
+.book-spine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px 2px 0 0;
+}
+
+.book-spine-title {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  max-height: calc(100% - 16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 5px;
+  font-family: "Georgia", serif;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  user-select: none;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Hover Phase 1: spine rises (triggered by .book-active class from React) ── */
+.book-active .book-spine {
+  transform: translateY(-28px) rotateX(4deg);
+  box-shadow: -3px 0 10px rgba(0, 0, 0, 0.3),
+    inset -6px 0 12px rgba(0, 0, 0, 0.2),
+    inset 2px 0 5px rgba(255, 255, 255, 0.07), 0 18px 36px rgba(0, 0, 0, 0.32),
+    0 6px 12px rgba(0, 0, 0, 0.18);
+  z-index: 10;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BOOK POPUP — fixed position, rendered outside the bookcase
+   so it's never clipped by any overflow context
+═══════════════════════════════════════════════════════════ */
+
+.book-popup-fixed {
+  position: fixed;
+  width: 210px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2), 0 3px 10px rgba(0, 0, 0, 0.1);
+  padding: 14px;
+  z-index: 9999;
+  /* Pop-in animation */
+  animation: popupIn 0.22s cubic-bezier(0.34, 1.5, 0.64, 1) both;
+}
+
+@keyframes popupIn {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 @import url("https://fonts.googleapis.com/css2?family=Boldonse&family=Inter:wght@400;500;600;700;800&display=swap");
 
 :root {
@@ -31,4 +474,112 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+.book-popup-fixed img {
+  width: 100%;
+  height: 136px;
+  object-fit: contain;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  background: #f5ede0;
+}
+
+.book-card-no-cover {
+  width: 100%;
+  height: 136px;
+  background: #f5ede0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #b8a07a;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.book-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 3px;
+  color: #1a1008;
+}
+
+.book-card-author {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 2px;
+}
+
+.book-card-year {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+.book-card-condition {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  background: #fef3e2;
+  color: #a0620a;
+  margin-bottom: 10px;
+  letter-spacing: 0.03em;
+}
+
+.book-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.book-card-actions button {
+  flex: 1;
+  padding: 5px 0;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+.book-card-actions button:hover {
+  opacity: 0.75;
+}
+.book-card-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-edit {
+  background: #eff6ff;
+  color: #3b82f6;
+  border: 1px solid #bfdbfe;
+}
+
+.btn-remove {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+}
+
+/* Edit form inside popup */
+.book-edit-form {
+  margin-top: 8px;
+}
+
+.book-edit-form select {
+  width: 100%;
+  padding: 5px 8px;
+  font-size: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  background: #fff;
+  font-family: inherit;
+  color: #2c1f0e;
 }
