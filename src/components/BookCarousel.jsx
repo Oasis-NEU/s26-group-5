@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import BookCard from "./BookCard";
 import "./BookCarousel.css";
 
-export default function BookCarousel({ title, description, books }) {
+export default function BookCarousel({ id, title, description, books }) {
   const trackRef = useRef(null);
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
@@ -25,11 +25,11 @@ export default function BookCarousel({ title, description, books }) {
     const card = el.firstElementChild;
     const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
     const cardWidth = card ? card.offsetWidth + gap : 300;
-    el.scrollBy({ left: dir * cardWidth * 3, behavior: "smooth" });
+    el.scrollBy({ left: dir * cardWidth * 6, behavior: "smooth" });
   }
 
   return (
-    <section className="book-carousel-section">
+    <section id={id} className="book-carousel-section">
       <div className="book-carousel-header">
         <h2 className="book-carousel-title">{title}</h2>
         {description && <p className="book-carousel-description">{description}</p>}
@@ -43,10 +43,12 @@ export default function BookCarousel({ title, description, books }) {
           </button>
         )}
 
+        <div className="book-carousel-track-clip">
         <div className="book-carousel-track" ref={trackRef} onScroll={handleScroll}>
           {books.map((book) => (
             <BookCard key={book.id} {...book} />
           ))}
+        </div>
         </div>
 
         {showRight && (

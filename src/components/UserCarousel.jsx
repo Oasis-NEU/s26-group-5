@@ -43,10 +43,12 @@ export default function UserCarousel({ users }) {
           </button>
         )}
 
+        <div className="user-carousel-track-clip">
         <div className="user-carousel-track" ref={trackRef} onScroll={handleScroll}>
           {users.map((user) => (
             <UserCard key={user.id} {...user} />
           ))}
+        </div>
         </div>
 
         {showRight && (

@@ -1,23 +1,24 @@
 @import "./CarouselBtn.css";
 
 .book-carousel-section {
-  margin-bottom: 7vh;
+  margin-bottom: 6vh;
+  scroll-margin-top: 32vh;
 }
 
 .book-carousel-header {
-  margin-bottom: 1.5vh;
+  margin-bottom: 2vh;
 }
 
 .book-carousel-title {
-  margin: 0 0 0.4vh;
-  font-size: 18px;
+  margin: 0 0 0.6vh;
+  font-size: 22px;
   font-weight: 700;
   color: #111827;
 }
 
 .book-carousel-description {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   color: #6b7280;
 }
 
@@ -25,10 +26,23 @@
   position: relative;
 }
 
+.book-carousel-track-clip {
+  overflow-x: clip;
+  overflow-y: visible;
+  padding-top: 6px;
+  margin-top: -6px;
+}
+
 .book-carousel-track {
   display: flex;
   gap: 1vw;
-  overflow-x: hidden;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.book-carousel-track::-webkit-scrollbar {
+  display: none;
 }
 
 .book-carousel-track > * {

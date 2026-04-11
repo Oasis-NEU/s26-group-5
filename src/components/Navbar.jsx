@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Auth from "./Auth";
 import "./Navbar.css";
 
@@ -8,8 +8,18 @@ const MORE_GENRES = ["Nonfiction", "Children's Books", "Comics & Graphic Novels"
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogin, setShowLogin] = useState(false);
+
+  function handleCategoryClick(title) {
+    const id = title.toLowerCase().replace(/\s+/g, "-");
+    if (location.pathname === "/") {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      navigate(`/#${id}`);
+    }
+  }
 
   function handleSearch() {
     console.log("Searching for:", searchQuery);
@@ -91,11 +101,11 @@ export default function Navbar() {
       {/* Bottom Row */}
       <div className="navbar-bottom-row">
         <div className="navbar-genre-group">
-          <button className="navbar-featured-btn">Featured</button>
-          <button className="navbar-featured-btn">New Postings</button>
+          <button className="navbar-featured-btn" onClick={() => handleCategoryClick("Featured")}>Featured</button>
+          <button className="navbar-featured-btn" onClick={() => handleCategoryClick("New Postings")}>New Postings</button>
           <div className="navbar-divider" />
           {GENRES.map((genre) => (
-            <button key={genre} className="navbar-genre-btn">
+            <button key={genre} className="navbar-genre-btn" onClick={() => handleCategoryClick(genre)}>
               {genre}
             </button>
           ))}

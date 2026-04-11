@@ -25,10 +25,23 @@
   position: relative;
 }
 
+.user-carousel-track-clip {
+  overflow-x: clip;
+  overflow-y: visible;
+  padding-top: 6px;
+  margin-top: -6px;
+}
+
 .user-carousel-track {
   display: flex;
   gap: 1.5vw;
-  overflow-x: hidden;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.user-carousel-track::-webkit-scrollbar {
+  display: none;
 }
 
 .user-carousel-track > * {

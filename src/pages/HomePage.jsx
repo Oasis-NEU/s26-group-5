@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import BookCarousel from "../components/BookCarousel";
 import UserCarousel from "../components/UserCarousel";
 import HeroPoster from "../components/HeroPoster";
@@ -20,22 +22,36 @@ const CATEGORIES_BOTTOM = [
   { title: "Historical Fiction", description: "The past brought to life through unforgettable characters." },
   { title: "Horror", description: "Spine-chilling reads for those who dare to turn the page." },
   { title: "Sci-Fi", description: "Worlds beyond imagination, from dystopias to deep space." },
+  { title: "Textbooks", description: "Academic titles for students — swap last semester's books for next semester's." },
 ];
 
+function toId(title) {
+  return title.toLowerCase().replace(/\s+/g, "-");
+}
+
 export default function HomePage() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const el = document.getElementById(location.hash.slice(1));
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [location.hash]);
+
   return (
     <main className="home-page">
 
       <HeroPoster />
 
       {CATEGORIES_TOP.map((cat) => (
-        <BookCarousel key={cat.title} title={cat.title} description={cat.description} books={SAMPLE_BOOKS} />
+        <BookCarousel key={cat.title} id={toId(cat.title)} title={cat.title} description={cat.description} books={SAMPLE_BOOKS} />
       ))}
 
       <UserCarousel users={SAMPLE_USERS} />
 
       {CATEGORIES_MID.map((cat) => (
-        <BookCarousel key={cat.title} title={cat.title} description={cat.description} books={SAMPLE_BOOKS} />
+        <BookCarousel key={cat.title} id={toId(cat.title)} title={cat.title} description={cat.description} books={SAMPLE_BOOKS} />
       ))}
 
       <Banner
@@ -47,7 +63,7 @@ export default function HomePage() {
       />
 
       {CATEGORIES_BOTTOM.map((cat) => (
-        <BookCarousel key={cat.title} title={cat.title} description={cat.description} books={SAMPLE_BOOKS} />
+        <BookCarousel key={cat.title} id={toId(cat.title)} title={cat.title} description={cat.description} books={SAMPLE_BOOKS} />
       ))}
 
     </main>
