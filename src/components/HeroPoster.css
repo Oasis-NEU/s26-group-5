@@ -1,0 +1,52 @@
+.hero-poster {
+  margin: 6vh 0;
+  background: linear-gradient(135deg, #111827 0%, #1f2937 60%, #c0392b 160%);
+  min-height: 40vh;
+  border-radius: 1.2vw;
+  display: flex;
+  align-items: center;
+}
+
+.hero-poster-inner {
+  padding: 5vh 4vw;
+}
+
+.hero-poster-eyebrow {
+  margin: 0 0 1.2vh;
+  font-size: 0.78vw;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #f87171;
+}
+
+.hero-poster-headline {
+  margin: 0 0 2vh;
+  font-family: 'Boldonse', sans-serif;
+  font-size: 4.2vw;
+  line-height: 1.22;
+  color: #f9fafb;
+  letter-spacing: -0.01em;
+}
+
+.hero-poster-sub {
+  margin: 0 0 3.2vh;
+  font-size: 1vw;
+  line-height: 1.7;
+  color: #d1d5db;
+  max-width: 38vw;
+}
+
+.hero-poster-cta {
+  display: inline-block;
+  padding: 1vh 1.8vw;
+  border-radius: 0.5vw;
+  background-color: #c0392b;
+  color: #fff;
+  font-size: 0.82vw;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}

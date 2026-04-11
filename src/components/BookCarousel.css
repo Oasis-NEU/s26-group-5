@@ -1,0 +1,72 @@
+.book-carousel-section {
+  margin-bottom: 4vh;
+}
+
+.book-carousel-header {
+  margin-bottom: 1.5vh;
+}
+
+.book-carousel-title {
+  margin: 0 0 0.4vh;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.book-carousel-description {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.book-carousel {
+  position: relative;
+}
+
+.book-carousel-track {
+  display: flex;
+  gap: 1vw;
+  overflow-x: hidden;
+}
+
+.book-carousel-track > * {
+  flex: 0 0 calc((100% - 5 * 1vw) / 6);
+}
+
+.book-carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+  z-index: 10;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.book-carousel-btn:hover {
+  background-color: #f3f4f6;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transform: translateY(calc(-50% - 1px));
+}
+
+.book-carousel-btn:active {
+  transform: translateY(-50%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.book-carousel-btn--left {
+  left: -18px;
+}
+
+.book-carousel-btn--right {
+  right: -18px;
+}

@@ -1,26 +1,16 @@
 /* Layout for authentication pages: No header or footers. */
 
 import { Outlet } from "react-router-dom";
+import "./AuthLayout.css";
 
 function AuthLayout() {
   return (
-    <div style={styles.pageShell}>
-      <div style={styles.content}>
+    <div className="auth-layout-shell">
+      <div className="auth-layout-content">
         <Outlet />
       </div>
     </div>
   );
 }
-
-const styles = {
-  pageShell: {
-    width: "100%",
-  },
-  content: {
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "80px",
-  },
-};
 
 export default AuthLayout;
