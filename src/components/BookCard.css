@@ -13,8 +13,14 @@
   border-radius: 1.2vw;
   border: 1px solid #e5e7eb;
   background-color: #fff;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   overflow: hidden;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
 .book-cover-artwork {
@@ -57,10 +63,10 @@
   -webkit-box-orient: vertical;
 }
 
-.book-card-price {
-  font-size: 13px;
-  font-weight: 700;
-  color: #111827;
+.book-card-condition {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
   white-space: nowrap;
 }
 

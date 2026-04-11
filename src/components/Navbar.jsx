@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Auth from "./Auth";
 import "./Navbar.css";
 
-const GENRES = ["Nonfiction", "Horror", "Mystery", "Romance", "Sci-Fi", "Historical Fiction", "Textbooks"];
-const MORE_GENRES = ["Children's Books", "Comics & Graphic Novels", "Self-Help", "Biography", "Poetry", "Art & Photography", "Travel", "Cookbooks"];
+const GENRES = ["Mystery", "Romance", "Historical Fiction", "Horror", "Sci-Fi", "Textbooks"];
+const MORE_GENRES = ["Nonfiction", "Children's Books", "Comics & Graphic Novels", "Self-Help", "Biography", "Poetry", "Art & Photography", "Travel", "Cookbooks"];
 
 export default function Navbar() {
   const navigate = useNavigate();

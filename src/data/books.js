@@ -4,7 +4,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title One",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$12.99",
     condition: "Like New",
     description:
       "Placeholder description for a listing. Use this area to highlight the book's plot, edition details, and any seller notes.",
@@ -18,7 +17,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Two",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$8.50",
     condition: "Good",
     description:
       "Placeholder description for a listing. You can later connect this card to real inventory data and a details page.",
@@ -32,7 +30,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Three",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$15.00",
     condition: "Very Good",
     description:
       "Placeholder description for a listing. This card is reusable, so you can pass in real values once your backend is ready.",
@@ -46,7 +43,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Four",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$10.75",
     condition: "Good",
     description:
       "Placeholder description for a listing. Swap this with real book details once your inventory and backend routes are connected.",
@@ -60,7 +56,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Five",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$18.20",
     condition: "Like New",
     description:
       "Placeholder description for a listing. Keep this as sample content until real listing metadata is available.",
@@ -74,7 +69,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Six",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$9.99",
     condition: "Good",
     description:
       "Placeholder description for a listing. Replace this with real book data once your inventory is connected.",
@@ -88,7 +82,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Seven",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$11.50",
     condition: "Like New",
     description:
       "Placeholder description for a listing. Replace this with real book data once your inventory is connected.",
@@ -102,7 +95,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Eight",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$7.25",
     condition: "Good",
     description:
       "Placeholder description for a listing. Replace this with real book data once your inventory is connected.",
@@ -116,7 +108,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Nine",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$13.00",
     condition: "Very Good",
     description:
       "Placeholder description for a listing. Replace this with real book data once your inventory is connected.",
@@ -130,7 +121,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Ten",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$6.75",
     condition: "Good",
     description:
       "Placeholder description for a listing. Replace this with real book data once your inventory is connected.",
@@ -144,7 +134,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Eleven",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$16.50",
     condition: "Like New",
     description:
       "Placeholder description for a listing. Replace this with real book data once your inventory is connected.",
@@ -158,7 +147,6 @@ export const SAMPLE_BOOKS = [
     title: "Placeholder Title Twelve",
     author: "Placeholder Author",
     seller: "Placeholder Seller",
-    price: "$14.25",
     condition: "Very Good",
     description:
       "Placeholder description for a listing. Replace this with real book data once your inventory is connected.",

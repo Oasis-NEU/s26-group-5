@@ -33,10 +33,6 @@ export default function BookDetailsPage() {
           </div>
           <div className="book-details-quick-facts">
             <div className="book-details-fact-box">
-              <span className="detail-label">Price</span>
-              <strong className="detail-value">{book.price}</strong>
-            </div>
-            <div className="book-details-fact-box">
               <span className="detail-label">Condition</span>
               <strong className="detail-value">{book.condition}</strong>
             </div>
@@ -47,7 +43,7 @@ export default function BookDetailsPage() {
           <p className="book-details-kicker">Placeholder listing details</p>
           <h1 className="book-details-title">{book.title}</h1>
           <p className="book-details-subtitle">
-            by {book.author} · Sold by {book.seller}
+            by {book.author} · Listed by {book.seller}
           </p>
 
           <div className="book-details-meta-grid">
@@ -69,7 +65,7 @@ export default function BookDetailsPage() {
 
           <div className="book-details-actions">
             <button type="button" className="book-details-primary-btn">
-              Add to Cart
+              Propose a Trade
             </button>
             <button type="button" className="book-details-secondary-btn">
               Save Listing

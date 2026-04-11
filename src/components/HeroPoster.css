@@ -22,11 +22,11 @@
 
 .hero-poster-headline {
   margin: 0 0 2vh;
-  font-family: 'Boldonse', sans-serif;
+  font-family: 'Special Gothic Expanded One', sans-serif;
   font-size: 4.2vw;
-  line-height: 1.22;
+  line-height: 1.1;
   color: #f9fafb;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.03em;
 }
 
 .hero-poster-sub {

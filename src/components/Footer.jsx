@@ -12,7 +12,7 @@ export default function Footer() {
             <span className="footer-logo-text">BookX</span>
           </div>
           <p className="footer-tagline">
-            Buy, sell, and trade books with people in your community.
+            Trade books with readers in your community.
           </p>
         </div>
 
@@ -34,22 +34,10 @@ export default function Footer() {
           </div>
 
           <div className="footer-col">
-            <h4 className="footer-col-heading">Account</h4>
-            <ul className="footer-col-list">
-              <li>Sign Up</li>
-              <li>Log In</li>
-              <li>My Library</li>
-              <li>Wishlist</li>
-              <li>Trade Requests</li>
-              <li>My Listings</li>
-            </ul>
-          </div>
-
-          <div className="footer-col">
-            <h4 className="footer-col-heading">Selling</h4>
+            <h4 className="footer-col-heading">Trading</h4>
             <ul className="footer-col-list">
               <li>Add a Listing</li>
-              <li>Pricing Tips</li>
+              <li>How Trades Work</li>
               <li>Condition Guide</li>
               <li>Shipping Info</li>
             </ul>

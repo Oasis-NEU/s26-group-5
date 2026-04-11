@@ -26,13 +26,13 @@
 }
 
 .footer-logo-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   background-color: #c0392b;
   color: #fff;
   font-weight: 800;
-  font-size: 16px;
+  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,7 +40,7 @@
 
 .footer-logo-text {
   font-family: 'Boldonse', 'Open Sans', sans-serif;
-  font-size: 18px;
+  font-size: 26px;
   color: #f9fafb;
   letter-spacing: -0.5px;
 }

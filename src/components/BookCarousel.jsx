@@ -36,7 +36,7 @@ export default function BookCarousel({ title, description, books }) {
       </div>
       <div className="book-carousel">
         {showLeft && (
-          <button className="book-carousel-btn book-carousel-btn--left" onClick={() => scrollCarousel(-1)}>
+          <button className="carousel-btn carousel-btn--left" onClick={() => scrollCarousel(-1)}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
@@ -50,7 +50,7 @@ export default function BookCarousel({ title, description, books }) {
         </div>
 
         {showRight && (
-          <button className="book-carousel-btn book-carousel-btn--right" onClick={() => scrollCarousel(1)}>
+          <button className="carousel-btn carousel-btn--right" onClick={() => scrollCarousel(1)}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6"/>
             </svg>

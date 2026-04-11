@@ -1,5 +1,7 @@
+@import "./CarouselBtn.css";
+
 .user-carousel-section {
-  margin-bottom: 4vh;
+  margin-bottom: 7vh;
 }
 
 .user-carousel-header {
@@ -40,12 +42,13 @@
   overflow: hidden;
   background-color: #fff;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .user-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
 }
 
 /* 2x2 collage */
@@ -94,43 +97,4 @@
   margin: 0;
   font-size: 12px;
   color: #6b7280;
-}
-
-/* Arrows */
-.user-carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #111827;
-  z-index: 10;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-}
-
-.user-carousel-btn:hover {
-  background-color: #f3f4f6;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-  transform: translateY(calc(-50% - 1px));
-}
-
-.user-carousel-btn:active {
-  transform: translateY(-50%);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.user-carousel-btn--left {
-  left: -18px;
-}
-
-.user-carousel-btn--right {
-  right: -18px;
 }

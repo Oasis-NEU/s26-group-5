@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import "./HeroPoster.css";
 
 export default function HeroPoster({
-  eyebrow = "Buy & Sell Textbooks",
-  headline = <>Your next read<br />is one click away.</>,
-  sub = "Browse thousands of used and like-new books listed by students just like you — at prices that won't hurt your wallet.",
+  eyebrow = "Trade Books Near You",
+  headline = <>Your next read<br />is one trade away.</>,
+  sub = "Browse thousands of used and like-new books listed by readers just like you — swap what you've finished for something you actually want.",
   ctaLabel = "Browse all books",
   ctaTo = "/browse",
 }) {
