@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { searchBooks } from "../api/googleBooks";
 import "./AddBookPage.css";
 
 const CONDITIONS = ["Like New", "Good", "Acceptable"];
@@ -13,30 +14,10 @@ const CONDITION_HINTS = {
 export default function AddBookPage() {
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Pre-populate when coming from "List for Trade" in My Library
-  useEffect(() => {
-    const state = location.state;
-    if (!state?.book) return;
-    const { book, condition: preCondition, notes: preNotes } = state;
-    setSelectedBook({
-      id: book.google_books_id,
-      _supabaseBookId: book.id,
-      volumeInfo: {
-        title: book.title,
-        authors: book.authors || [],
-        imageLinks: book.thumbnail ? { thumbnail: book.thumbnail } : undefined,
-        publishedDate: book.published_date,
-        categories: book.genre ? [book.genre] : [],
-      },
-    });
-    if (preCondition) setCondition(preCondition);
-    if (preNotes) setSellerNotes(preNotes);
-    setDestination("trade");
-  }, []);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Search
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(searchParams.get("q") || "");
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
 
@@ -56,20 +37,74 @@ export default function AddBookPage() {
 
   const photoInputRef = useRef(null);
 
+  // Pre-populate when coming from "List for Trade" or "Edit Book" in My Library
+  useEffect(() => {
+    const state = location.state;
+
+    if (state?.book) {
+      const { book, condition: preCondition, notes: preNotes } = state;
+      setSelectedBook({
+        id: book.google_books_id,
+        _supabaseBookId: book.id,
+        volumeInfo: {
+          title: book.title,
+          authors: book.authors || [],
+          imageLinks: book.thumbnail ? { thumbnail: book.thumbnail } : undefined,
+          publishedDate: book.published_date,
+          categories: book.genre ? [book.genre] : [],
+        },
+      });
+      if (preCondition) setCondition(preCondition);
+      if (preNotes) setSellerNotes(preNotes);
+      setDestination("trade");
+      return;
+    }
+
+    if (state?.editEntry) {
+      const { id, book, condition: preCondition, notes: preNotes } = state.editEntry;
+      setSelectedBook({
+        id: book.google_books_id,
+        _supabaseBookId: book.id,
+        _userBookId: id,
+        volumeInfo: {
+          title: book.title,
+          authors: book.authors || [],
+          imageLinks: book.thumbnail ? { thumbnail: book.thumbnail } : undefined,
+          publishedDate: book.published_date,
+          categories: book.genre ? [book.genre] : [],
+        },
+      });
+      if (preCondition) setCondition(preCondition);
+      if (preNotes) setSellerNotes(preNotes);
+    }
+  }, []);
+
+  // Auto-search if URL already has ?q=
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (!q) return;
+    setSearching(true);
+    searchBooks(q, 6)
+      .then(setResults)
+      .catch(() => setResults([]))
+      .finally(() => setSearching(false));
+  }, []);
+
   useEffect(() => {
     if (submitted) window.scrollTo({ top: 0, behavior: "smooth" });
   }, [submitted]);
 
   async function handleSearch() {
     if (!query.trim()) return;
+    setSearchParams({ q: query.trim() });
     setSearching(true);
     setResults([]);
-    const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
-    const res = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=6&key=${apiKey}`
-    );
-    const data = await res.json();
-    setResults(data.items || []);
+    try {
+      const items = await searchBooks(query.trim(), 6);
+      setResults(items);
+    } catch {
+      setResults([]);
+    }
     setSearching(false);
   }
 
@@ -91,7 +126,7 @@ export default function AddBookPage() {
   }
 
   async function handleSubmit() {
-    if (!selectedBook || !destination) return;
+    if (!selectedBook) return;
     setSubmitting(true);
     setSubmitError(null);
 
@@ -99,6 +134,22 @@ export default function AddBookPage() {
     if (!session) {
       setSubmitError("You must be logged in to add a book.");
       setSubmitting(false);
+      return;
+    }
+
+    // Edit mode: update existing user_books entry
+    if (selectedBook._userBookId) {
+      const { error } = await supabase
+        .from("user_books")
+        .update({ condition, notes: sellerNotes || null })
+        .eq("id", selectedBook._userBookId);
+      if (error) {
+        setSubmitError("Failed to update book: " + error.message);
+        setSubmitting(false);
+        return;
+      }
+      setSubmitting(false);
+      setSubmitted(true);
       return;
     }
 
@@ -182,28 +233,31 @@ export default function AddBookPage() {
 
   const info          = selectedBook?.volumeInfo;
   const fromLibrary   = !!selectedBook?._supabaseBookId;
-  const isListingMode = destination === "trade" || fromLibrary;
-  const canSubmit     = !!selectedBook && !!destination &&
-    (!isListingMode || sellerNotes.trim().length > 0);
+  const isEditMode    = !!selectedBook?._userBookId;
+  const isListingMode = !isEditMode && (destination === "trade" || fromLibrary);
+  const canSubmit     = !!selectedBook && (!isListingMode || sellerNotes.trim().length > 0);
 
   // ── Success screen ────────────────────────────────────────
   if (submitted) {
-    const destinationMsg =
-      destination === "library" ? "Added to your library." : "Listed for trade.";
+    const destinationMsg = isEditMode
+      ? "Your changes have been saved."
+      : destination === "library" ? "Added to your library." : "Listed for trade.";
 
     return (
       <div className="add-book-page">
         <div className="add-book-success">
           <div className="add-book-success-icon">✓</div>
-          <h2>Book added!</h2>
+          <h2>{isEditMode ? "Book updated!" : "Book added!"}</h2>
           <p>{destinationMsg}</p>
           <div className="add-book-success-actions">
             <button className="abp-btn-primary" onClick={() => navigate("/library")}>
               Go to My Library
             </button>
-            <button className="abp-btn-ghost" onClick={resetForm}>
-              Add Another
-            </button>
+            {!isEditMode && (
+              <button className="abp-btn-ghost" onClick={resetForm}>
+                Add Another
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -217,15 +271,7 @@ export default function AddBookPage() {
 
         {/* Header */}
         <div className="add-book-header">
-          <button className="add-book-back" onClick={() => navigate(-1)}>
-            ← Back
-          </button>
-          <h1 className="add-book-title">{fromLibrary ? "List for Trade" : "Add a Book"}</h1>
-          <p className="add-book-subtitle">
-            {fromLibrary
-              ? "Fill in the details for your listing — condition and notes are required."
-              : "Search for your book, fill in the details, and choose where it goes."}
-          </p>
+          <h1 className="add-book-title">{isEditMode ? "Edit Book" : fromLibrary ? "List for Trade" : "Add a Book"}</h1>
         </div>
 
         {/* Step 1: Search */}
@@ -240,7 +286,7 @@ export default function AddBookPage() {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
-              <button className="abp-btn-primary" onClick={handleSearch} disabled={searching}>
+              <button className="abp-btn-search" onClick={handleSearch} disabled={searching}>
                 {searching ? "Searching..." : "Search"}
               </button>
             </div>
@@ -308,6 +354,41 @@ export default function AddBookPage() {
             {/* Right: form fields */}
             <div className="add-book-form">
 
+              {/* Where to add — hidden when coming from library (always listing for trade) */}
+              {!fromLibrary && <div className="add-book-field">
+                <span className="add-book-label">Where to add</span>
+                <div className="add-book-checkboxes">
+                  <label className={`add-book-checkbox-row${destination === "library" ? " checked" : ""}`}>
+                    <input
+                      type="radio"
+                      name="destination"
+                      checked={destination === "library"}
+                      onChange={() => setDestination("library")}
+                    />
+                    <div className="add-book-checkbox-text">
+                      <span className="add-book-checkbox-title">My Library</span>
+                      <span className="add-book-checkbox-desc">
+                        Adds to your personal bookcase for display
+                      </span>
+                    </div>
+                  </label>
+                  <label className={`add-book-checkbox-row${destination === "trade" ? " checked" : ""}`}>
+                    <input
+                      type="radio"
+                      name="destination"
+                      checked={destination === "trade"}
+                      onChange={() => setDestination("trade")}
+                    />
+                    <div className="add-book-checkbox-text">
+                      <span className="add-book-checkbox-title">List for Trade</span>
+                      <span className="add-book-checkbox-desc">
+                        Makes this book visible to others who want to propose a trade
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              </div>}
+
               {/* Condition */}
               <div className="add-book-field">
                 <span className="add-book-label">
@@ -333,7 +414,7 @@ export default function AddBookPage() {
               {/* Seller notes */}
               <div className="add-book-field">
                 <span className="add-book-label">
-                  Seller Notes{" "}
+                  Notes{" "}
                   {isListingMode
                     ? <span className="add-book-required">*</span>
                     : <span className="add-book-optional">(optional)</span>}
@@ -381,41 +462,6 @@ export default function AddBookPage() {
                 </div>
               </div>
 
-              {/* Where to add — hidden when coming from library (always listing for trade) */}
-              {!fromLibrary && <div className="add-book-field">
-                <span className="add-book-label">Where to add</span>
-                <div className="add-book-checkboxes">
-                  <label className={`add-book-checkbox-row${destination === "library" ? " checked" : ""}`}>
-                    <input
-                      type="radio"
-                      name="destination"
-                      checked={destination === "library"}
-                      onChange={() => setDestination("library")}
-                    />
-                    <div className="add-book-checkbox-text">
-                      <span className="add-book-checkbox-title">My Library</span>
-                      <span className="add-book-checkbox-desc">
-                        Adds to your personal bookcase for display
-                      </span>
-                    </div>
-                  </label>
-                  <label className={`add-book-checkbox-row${destination === "trade" ? " checked" : ""}`}>
-                    <input
-                      type="radio"
-                      name="destination"
-                      checked={destination === "trade"}
-                      onChange={() => setDestination("trade")}
-                    />
-                    <div className="add-book-checkbox-text">
-                      <span className="add-book-checkbox-title">List for Trade</span>
-                      <span className="add-book-checkbox-desc">
-                        Makes this book visible to others who want to propose a trade
-                      </span>
-                    </div>
-                  </label>
-                </div>
-              </div>}
-
               {submitError && <p className="add-book-checkbox-error">{submitError}</p>}
               <button
                 className="abp-btn-primary add-book-submit"
@@ -423,8 +469,8 @@ export default function AddBookPage() {
                 disabled={!canSubmit || submitting}
               >
                 {submitting
-                  ? (fromLibrary ? "Listing..." : "Adding...")
-                  : (fromLibrary ? "Create Listing" : "Add Book")}
+                  ? (isEditMode ? "Saving..." : isListingMode ? "Listing..." : "Adding...")
+                  : (isEditMode ? "Save Changes" : isListingMode ? "Add Listing" : "Add Book")}
               </button>
             </div>
           </div>

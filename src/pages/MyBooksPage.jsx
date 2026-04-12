@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import "./MyBooksPage.css";
 
-const CONDITIONS = ["Like New", "Good", "Acceptable"];
 const BOOKS_PER_SHELF = 12;
 const MIN_SHELVES = 3;
 
@@ -71,10 +70,6 @@ export default function MyBooksPage() {
   const [listings, setListings]               = useState([]);
   const [loadingListings, setLoadingListings] = useState(false);
 
-  // Edit (popup)
-  const [editingId, setEditingId]         = useState(null);
-  const [editCondition, setEditCondition] = useState("");
-  const [saving, setSaving]               = useState(false);
 
 
   // Hover popup
@@ -136,7 +131,7 @@ export default function MyBooksPage() {
   async function fetchListings() {
     setLoadingListings(true);
     const { data, error } = await supabase
-      .from("listings")
+      .from("trade_listings")
       .select("id, condition, notes, status, created_at, book:books(id, title, authors, thumbnail, genre)")
       .eq("user_id", session.user.id)
       .order("created_at", { ascending: false });
@@ -144,24 +139,20 @@ export default function MyBooksPage() {
     setLoadingListings(false);
   }
 
-  // ── Edit book (popup) ─────────────────────────────────────
+  // ── Edit book ─────────────────────────────────────────────
 
-  function startEditing(entry) {
-    setEditingId(entry.id);
-    setEditCondition(entry.condition || CONDITIONS[0]);
-  }
-
-  async function saveEdit(entryId) {
-    setSaving(true);
-    const { error } = await supabase
-      .from("user_books")
-      .update({ condition: editCondition })
-      .eq("id", entryId);
-    if (!error) {
-      setBooks((prev) => prev.map((b) => b.id === entryId ? { ...b, condition: editCondition } : b));
-      setEditingId(null);
-    }
-    setSaving(false);
+  function editBook(entry) {
+    setHoveredEntry(null);
+    navigate("/add-book", {
+      state: {
+        editEntry: {
+          id: entry.id,
+          book: entry.book,
+          condition: entry.condition,
+          notes: entry.notes,
+        },
+      },
+    });
   }
 
   // ── List for Trade ────────────────────────────────────────
@@ -182,7 +173,7 @@ export default function MyBooksPage() {
   }
 
   async function removeListing(listingId) {
-    await supabase.from("listings").delete().eq("id", listingId);
+    await supabase.from("trade_listings").delete().eq("id", listingId);
     setListings((prev) => prev.filter((l) => l.id !== listingId));
   }
 
@@ -211,7 +202,6 @@ export default function MyBooksPage() {
     shelves.push(books.slice(i, i + BOOKS_PER_SHELF));
   while (shelves.length < MIN_SHELVES) shelves.push([]);
 
-  const isEditing       = hoveredEntry ? editingId === hoveredEntry.id : false;
   const isAlreadyListed = hoveredEntry
     ? listings.some((l) => l.book?.id === hoveredEntry.book.id)
     : false;
@@ -396,43 +386,18 @@ export default function MyBooksPage() {
           {hoveredEntry.book.published_date && (
             <div className="book-card-year">{hoveredEntry.book.published_date.slice(0, 4)}</div>
           )}
-          {hoveredEntry.book.genre && (
-            <div className="book-card-genre">{hoveredEntry.book.genre}</div>
-          )}
 
-          {isEditing ? (
-            <div className="book-edit-form">
-              <select value={editCondition} onChange={(e) => setEditCondition(e.target.value)}>
-                {CONDITIONS.map((c) => <option key={c}>{c}</option>)}
-              </select>
-              <div className="book-card-actions">
-                <button className="btn-edit" onClick={() => saveEdit(hoveredEntry.id)} disabled={saving}>
-                  {saving ? "Saving..." : "Save"}
-                </button>
-                <button className="btn-remove" onClick={() => setEditingId(null)}>Cancel</button>
-              </div>
-            </div>
+          {isAlreadyListed ? (
+            <div className="book-card-listed-badge">Already listed for trade</div>
           ) : (
-            <>
-              {hoveredEntry.condition && (
-                <span className="book-card-condition">{hoveredEntry.condition}</span>
-              )}
-              {isAlreadyListed ? (
-                <div className="book-card-listed-badge">Already listed for trade</div>
-              ) : (
-                <button
-                  className="btn-list-trade"
-                  onClick={() => listForTrade(hoveredEntry)}
-                >
-                  List for Trade
-                </button>
-              )}
-              <div className="book-card-actions">
-                <button className="btn-edit" onClick={() => startEditing(hoveredEntry)}>Edit</button>
-                <button className="btn-remove" onClick={() => removeBook(hoveredEntry.id)}>Remove</button>
-              </div>
-            </>
+            <button className="btn-list-trade" onClick={() => listForTrade(hoveredEntry)}>
+              List for Trade
+            </button>
           )}
+          <div className="book-card-actions">
+            <button className="btn-edit" onClick={() => editBook(hoveredEntry)}>Edit</button>
+            <button className="btn-remove" onClick={() => removeBook(hoveredEntry.id)}>Remove</button>
+          </div>
         </div>
       )}
 

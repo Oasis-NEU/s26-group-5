@@ -7,7 +7,7 @@
 
 /* ── Inner container ── */
 .add-book-inner {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -58,7 +58,6 @@
 .add-book-search-row {
   display: flex;
   gap: 10px;
-  margin-bottom: 16px;
 }
 
 .add-book-search-input {
@@ -81,7 +80,7 @@
 .add-book-results {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 16px 0 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -462,6 +461,27 @@
 }
 
 /* ── Buttons ── */
+.abp-btn-search {
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.abp-btn-search:hover {
+  background: #a93226;
+}
+.abp-btn-search:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .abp-btn-primary {
   padding: 10px 22px;
   font-size: 14px;

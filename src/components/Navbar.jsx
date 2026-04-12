@@ -147,15 +147,16 @@ export default function Navbar() {
           )}
         </div>{/*  */}
 
+        {/* Add Books */}
+        <button className="navbar-action-btn" onClick={() => navigate("/add-book")}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Books
+        </button>
+
         {/* Actions */}
         <div className="navbar-actions">
-          <button className="navbar-action-btn" onClick={() => navigate("/add-book")}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            Add Books
-          </button>
-
           {/* My Library */}
           <button className="navbar-icon-btn" title="My Library" onClick={() => navigate("/library")}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -214,6 +215,7 @@ export default function Navbar() {
       {/* Bottom Row */}
       <div className="navbar-bottom-row">
         <div className="navbar-genre-group">
+
           <button className="navbar-featured-btn" onClick={() => handleCategoryClick("Featured")}>Featured</button>
           <button className="navbar-featured-btn" onClick={() => handleCategoryClick("New Listings")}>New Listings</button>
           <div className="navbar-divider" />
