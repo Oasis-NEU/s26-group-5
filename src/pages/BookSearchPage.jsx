@@ -37,6 +37,7 @@ function BookSearch() {
       published_date: info.publishedDate || null,
       page_count: info.pageCount || null,
       categories: info.categories || [],
+      genre: info.categories?.[0] || null,
     };
 
     const { error } = await supabase
