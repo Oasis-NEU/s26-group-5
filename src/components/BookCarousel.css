@@ -33,3 +33,4 @@
 .book-carousel-track > * {
   flex: 0 0 calc((100% - 5 * 1vw) / 6);
 }
+

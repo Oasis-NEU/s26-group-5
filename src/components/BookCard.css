@@ -6,9 +6,9 @@
 
 .book-card {
   display: grid;
-  grid-template-rows: 18vh 1fr;
+  grid-template-rows: 24vh 1fr;
   gap: 1.6vh;
-  height: 35vh;
+  height: 42vh;
   padding: 0.7vw;
   border-radius: 1.2vw;
   border: 1px solid #e5e7eb;
@@ -18,13 +18,13 @@
 }
 
 .book-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-color: #d1d5db;
 }
 
 .book-cover-img {
-  height: 18vh;
+  height: 24vh;
   min-height: 0;
   width: 100%;
   border-radius: 1vw;
@@ -34,7 +34,7 @@
 }
 
 .book-cover-artwork {
-  height: 18vh;
+  height: 24vh;
   min-height: 0;
   border-radius: 1vw;
   display: flex;

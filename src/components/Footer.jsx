@@ -1,7 +1,22 @@
+import { useNavigate } from "react-router-dom";
 import bxLogo from "../assets/bx.png";
 import "./Footer.css";
 
 export default function Footer() {
+  const navigate = useNavigate();
+
+  function goTo(path) {
+    navigate(path);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function goToSection(id) {
+    navigate("/");
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  }
+
   return (
     <footer className="footer">
       <div className="footer-inner">
@@ -23,22 +38,22 @@ export default function Footer() {
           <div className="footer-col">
             <h4 className="footer-col-heading">Browse</h4>
             <ul className="footer-col-list">
-              <li>Featured Listings</li>
-              <li>New Postings</li>
+              <li onClick={() => goToSection("featured")}>Featured Listings</li>
+              <li onClick={() => goToSection("new-listings")}>New Postings</li>
               <li>Nonfiction</li>
-              <li>Horror</li>
-              <li>Mystery</li>
-              <li>Romance</li>
-              <li>Sci-Fi</li>
-              <li>Textbooks</li>
+              <li onClick={() => goToSection("horror")}>Horror</li>
+              <li onClick={() => goToSection("mystery")}>Mystery</li>
+              <li onClick={() => goToSection("romance")}>Romance</li>
+              <li onClick={() => goToSection("sci-fi")}>Sci-Fi</li>
+              <li onClick={() => goToSection("textbooks")}>Textbooks</li>
             </ul>
           </div>
 
           <div className="footer-col">
             <h4 className="footer-col-heading">Trading</h4>
             <ul className="footer-col-list">
-              <li>Add a Listing</li>
-              <li>How Trades Work</li>
+              <li onClick={() => goTo("/add-book")}>Add a Listing</li>
+              <li onClick={() => goTo("/trade")}>How Trades Work</li>
               <li>Condition Guide</li>
               <li>Shipping Info</li>
             </ul>

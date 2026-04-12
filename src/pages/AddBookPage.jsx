@@ -91,6 +91,19 @@ export default function AddBookPage() {
       .finally(() => setSearching(false));
   }, []);
 
+  // Debounced auto-search as you type
+  useEffect(() => {
+    if (query.trim().length < 2) { setResults([]); return; }
+    const timer = setTimeout(() => {
+      setSearching(true);
+      searchBooks(query.trim(), 6)
+        .then(setResults)
+        .catch(() => setResults([]))
+        .finally(() => setSearching(false));
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [query]);
+
   useEffect(() => {
     if (submitted) window.scrollTo({ top: 0, behavior: "smooth" });
   }, [submitted]);
@@ -276,7 +289,7 @@ export default function AddBookPage() {
 
         {/* Header */}
         <div className="add-book-header">
-          <h1 className="add-book-title">{isEditMode ? "Edit Book" : fromLibrary ? "List for Trade" : "Add a Book"}</h1>
+          <h1 className="add-book-title">{isEditMode ? "Edit Book" : fromLibrary ? "List for Trade" : selectedBook ? "Add Book" : "Search Book"}</h1>
         </div>
 
         {/* Step 1: Search */}

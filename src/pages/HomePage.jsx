@@ -34,6 +34,10 @@ const CATEGORIES_BOTTOM = [
   { title: "Textbooks",  description: "Academic titles for students — swap last semester's books for next semester's." },
 ];
 
+function featuredSort(listings) {
+  return [...listings].sort((a, b) => (b.pageCount ?? 0) - (a.pageCount ?? 0));
+}
+
 function toId(title) {
   return title.toLowerCase().replace(/\s+/g, "-");
 }
@@ -62,6 +66,7 @@ function toListing(listing, usernameById) {
     sellerId:     listing.user_id,
     description:  book.description ?? null,
     notes:        listing.notes ?? null,
+    createdAt:    listing.created_at,
   };
 }
 
@@ -86,11 +91,11 @@ export default function HomePage() {
   }, [listings]);
 
   useEffect(() => {
-    if (location.hash) {
+    if (location.hash && listings.length > 0) {
       const el = document.getElementById(location.hash.slice(1));
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  }, [location.hash]);
+  }, [location.hash, listings]);
 
   useEffect(() => {
     async function fetchListings() {
@@ -99,8 +104,9 @@ export default function HomePage() {
 
       let query = supabase
         .from("trade_listings")
-        .select("id, condition, notes, book_id, user_id")
-        .eq("status", "active");
+        .select("id, condition, notes, book_id, user_id, created_at")
+        .eq("status", "active")
+        .order("created_at", { ascending: false });
       if (currentUserId) query = query.neq("user_id", currentUserId);
 
       const { data: tradeRows, error: tradeError } = await query;
@@ -150,7 +156,7 @@ export default function HomePage() {
           id={toId(cat.title)}
           title={cat.title}
           description={cat.description}
-          books={listings}
+          books={cat.title === "Featured" ? featuredSort(listings) : listings}
         />
       ))}
 
