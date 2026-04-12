@@ -35,3 +35,22 @@
 .carousel-btn--right {
   right: -18px;
 }
+
+/* Shared track styles used by BookCarousel and UserCarousel */
+.carousel-track-clip {
+  overflow-x: clip;
+  overflow-y: visible;
+  padding-top: 6px;
+  margin-top: -6px;
+}
+
+.carousel-track {
+  display: flex;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}

@@ -26,23 +26,8 @@
   position: relative;
 }
 
-.book-carousel-track-clip {
-  overflow-x: clip;
-  overflow-y: visible;
-  padding-top: 6px;
-  margin-top: -6px;
-}
-
 .book-carousel-track {
-  display: flex;
   gap: 1vw;
-  overflow-x: scroll;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.book-carousel-track::-webkit-scrollbar {
-  display: none;
 }
 
 .book-carousel-track > * {

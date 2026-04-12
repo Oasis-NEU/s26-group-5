@@ -10,7 +10,7 @@ import "./HomePage.css";
 
 const CATEGORIES_TOP = [
   { title: "Featured", description: "Hand-picked listings our community is loving right now." },
-  { title: "New Postings", description: "Fresh arrivals just added — be the first to grab them." },
+  { title: "New Listings", description: "Fresh arrivals just added." },
 ];
 
 const CATEGORIES_MID = [

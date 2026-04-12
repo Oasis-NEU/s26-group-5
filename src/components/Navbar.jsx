@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Auth from "./Auth";
+import { searchBooks } from "../api/googleBooks";
 import "./Navbar.css";
 
 const GENRES = ["Mystery", "Romance", "Historical Fiction", "Horror", "Sci-Fi", "Textbooks"];
@@ -11,6 +12,43 @@ export default function Navbar() {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogin, setShowLogin] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef(null);
+
+  // Debounced suggestions fetch
+  useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setSuggestions([]);
+      return;
+    }
+    const timer = setTimeout(() => {
+      searchBooks(searchQuery, 5)
+        .then(setSuggestions)
+        .catch(() => setSuggestions([]));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Clear search when navigating away from search page
+  useEffect(() => {
+    if (location.pathname !== "/search") {
+      setSearchQuery("");
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [location.pathname]);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function handleCategoryClick(title) {
     const id = title.toLowerCase().replace(/\s+/g, "-");
@@ -22,11 +60,21 @@ export default function Navbar() {
   }
 
   function handleSearch() {
-    console.log("Searching for:", searchQuery);
+    if (!searchQuery.trim()) return;
+    setShowSuggestions(false);
+    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
   }
 
   function handleKeyDown(e) {
     if (e.key === "Enter") handleSearch();
+    if (e.key === "Escape") setShowSuggestions(false);
+  }
+
+  function handleSuggestionClick(item) {
+    const title = item.volumeInfo.title;
+    setSearchQuery(title);
+    setShowSuggestions(false);
+    navigate(`/search?q=${encodeURIComponent(title)}`);
   }
 
   return (
@@ -41,26 +89,49 @@ export default function Navbar() {
         </div>
 
         {/* Search */}
-        <div className="navbar-search-bar">
-          <input
-            type="text"
-            placeholder="Search titles, authors, or genres..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="navbar-search-input"
-          />
-          <button onClick={handleSearch} className="navbar-search-btn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </button>
+        <div className="navbar-search-wrapper" ref={searchRef}>
+          <div className="navbar-search-bar">
+            <input
+              type="text"
+              placeholder="Search titles, authors, or genres..."
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
+              onKeyDown={handleKeyDown}
+              onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+              className="navbar-search-input"
+            />
+            <button onClick={handleSearch} className="navbar-search-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </button>
+          </div>
+
+          {showSuggestions && suggestions.length > 0 && (
+            <ul className="navbar-suggestions">
+              {suggestions.map((item) => {
+                const info = item.volumeInfo;
+                return (
+                  <li key={item.id} className="navbar-suggestion-item" onMouseDown={() => handleSuggestionClick(item)}>
+                    {info.imageLinks?.smallThumbnail
+                      ? <img src={info.imageLinks.smallThumbnail} alt="" className="navbar-suggestion-thumb" />
+                      : <div className="navbar-suggestion-thumb navbar-suggestion-thumb--empty" />
+                    }
+                    <div className="navbar-suggestion-text">
+                      <span className="navbar-suggestion-title">{info.title}</span>
+                      {info.authors && <span className="navbar-suggestion-author">{info.authors[0]}</span>}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
 
         {/* Actions */}
         <div className="navbar-actions">
           <button className="navbar-action-btn" onClick={() => navigate("/trade")}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
             Add Listing
@@ -102,7 +173,7 @@ export default function Navbar() {
       <div className="navbar-bottom-row">
         <div className="navbar-genre-group">
           <button className="navbar-featured-btn" onClick={() => handleCategoryClick("Featured")}>Featured</button>
-          <button className="navbar-featured-btn" onClick={() => handleCategoryClick("New Postings")}>New Postings</button>
+          <button className="navbar-featured-btn" onClick={() => handleCategoryClick("New Listings")}>New Listings</button>
           <div className="navbar-divider" />
           {GENRES.map((genre) => (
             <button key={genre} className="navbar-genre-btn" onClick={() => handleCategoryClick(genre)}>
@@ -118,10 +189,7 @@ export default function Navbar() {
             </button>
             <div className="navbar-more-dropdown">
               {MORE_GENRES.map((genre) => (
-                <button
-                  key={genre}
-                  className="navbar-more-dropdown-item"
-                >
+                <button key={genre} className="navbar-more-dropdown-item">
                   {genre}
                 </button>
               ))}

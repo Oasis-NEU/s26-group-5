@@ -9,39 +9,18 @@
 }
 
 .user-carousel-title {
-  margin: 0 0 0.4vh;
-  font-size: 18px;
+  margin: 0;
+  font-size: 22px;
   font-weight: 700;
   color: #111827;
-}
-
-.user-carousel-description {
-  margin: 0;
-  font-size: 13px;
-  color: #6b7280;
 }
 
 .user-carousel {
   position: relative;
 }
 
-.user-carousel-track-clip {
-  overflow-x: clip;
-  overflow-y: visible;
-  padding-top: 6px;
-  margin-top: -6px;
-}
-
 .user-carousel-track {
-  display: flex;
   gap: 1.5vw;
-  overflow-x: scroll;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.user-carousel-track::-webkit-scrollbar {
-  display: none;
 }
 
 .user-carousel-track > * {

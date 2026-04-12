@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import BookDetailsPage from "./pages/BookDetailsPage";
 import TradePage from "./pages/TradePage";
 import MyBooksPage from "./pages/MyBooksPage";
+import SearchResultsPage from "./pages/SearchResultsPage";
 
 function PlaceholderPage({ title }) {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/books/:bookId" element={<BookDetailsPage />} />
           <Route path="/trade" element={<TradePage />} />
           <Route path="/library" element={<MyBooksPage />} />
+          <Route path="/search" element={<SearchResultsPage />} />
         </Route>
 
         {/*Non navbar pages*/}

@@ -1,5 +1,6 @@
 import { Link, useLocation, useParams } from "react-router-dom";
-import { getBookById } from "../data/books";
+import { getBookById, SAMPLE_BOOKS } from "../data/books";
+import BookCarousel from "../components/BookCarousel";
 import "./BookDetailsPage.css";
 
 export default function BookDetailsPage() {
@@ -16,37 +17,50 @@ export default function BookDetailsPage() {
           <p className="book-details-description">
             The route loaded, but there is no placeholder listing data for this item yet.
           </p>
-          <Link to="/" className="book-details-back-link">
-            Back to home
-          </Link>
+          <Link to="/" className="book-details-back-link">Back to home</Link>
         </section>
       </main>
     );
   }
 
+  const genreId = book.genre?.toLowerCase().replace(/\s+/g, "-");
+  const similarBooks = SAMPLE_BOOKS.filter((b) => b.genre === book.genre && b.id !== book.id);
+
   return (
     <main className="book-details-page">
-      <section className="book-details-layout">
+      <nav className="book-details-breadcrumb">
+        <Link to="/" className="breadcrumb-link">Home</Link>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="breadcrumb-chevron">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+        <Link to={`/#${genreId}`} className="breadcrumb-link breadcrumb-link--active">{book.genre}</Link>
+      </nav>
+
+      <div className="book-details-layout">
+
+        {/* Left: Cover */}
         <div className="book-details-cover-panel">
           <div className="book-details-cover" style={{ backgroundColor: book.coverColor }}>
+            <button type="button" className="book-details-heart-btn" title="Save Listing">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
             <span className="book-details-cover-label">Book Cover</span>
-          </div>
-          <div className="book-details-quick-facts">
-            <div className="book-details-fact-box">
-              <span className="detail-label">Condition</span>
-              <strong className="detail-value">{book.condition}</strong>
-            </div>
           </div>
         </div>
 
-        <div className="detail-card book-details-content-panel">
-          <p className="book-details-kicker">Placeholder listing details</p>
+        {/* Right: Info */}
+        <div className="book-details-info-panel">
           <h1 className="book-details-title">{book.title}</h1>
-          <p className="book-details-subtitle">
-            by {book.author} · Listed by {book.seller}
-          </p>
+          <p className="book-details-author">by {book.author}</p>
+          <p className="book-details-listed-by">Listed by <span>{book.seller}</span></p>
 
           <div className="book-details-meta-grid">
+            <div className="book-details-meta-item">
+              <span className="detail-label">Published</span>
+              <span className="detail-value">{book.publishedDate ?? "Unknown"}</span>
+            </div>
             <div className="book-details-meta-item">
               <span className="detail-label">Genre</span>
               <span className="detail-value">{book.genre}</span>
@@ -56,27 +70,40 @@ export default function BookDetailsPage() {
               <span className="detail-value">{book.pages}</span>
             </div>
             <div className="book-details-meta-item">
-              <span className="detail-label">Shipping</span>
-              <span className="detail-value">{book.shipping}</span>
+              <span className="detail-label">Condition</span>
+              <span className="detail-value">{book.condition}</span>
             </div>
           </div>
 
-          <p className="book-details-description">{book.description}</p>
+          {book.description && (
+            <div className="book-details-section">
+              <h3 className="book-details-section-title">About this Book</h3>
+              <p className="book-details-description">{book.description}</p>
+            </div>
+          )}
+
+          {book.sellerNote && (
+            <div className="book-details-section">
+              <h3 className="book-details-section-title">Seller Notes</h3>
+              <p className="book-details-description">{book.sellerNote}</p>
+            </div>
+          )}
 
           <div className="book-details-actions">
-            <button type="button" className="book-details-primary-btn">
-              Propose a Trade
-            </button>
-            <button type="button" className="book-details-secondary-btn">
-              Save Listing
-            </button>
+            <button type="button" className="book-details-primary-btn">Propose a Trade</button>
           </div>
-
-          <Link to="/" className="book-details-back-link">
-            Back to listings
-          </Link>
         </div>
-      </section>
+
+      </div>
+
+      {similarBooks.length > 0 && (
+        <div className="book-details-similar">
+          <BookCarousel
+            title={`More in ${book.genre}`}
+            books={similarBooks}
+          />
+        </div>
+      )}
     </main>
   );
 }
