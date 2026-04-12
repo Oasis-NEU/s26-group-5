@@ -113,6 +113,19 @@ export default function MyBooksPage() {
   const [hoveredEntry, setHoveredEntry] = useState(null);
   const [popupRect, setPopupRect] = useState(null);
   const leaveTimer = useRef(null);
+  const hoveredEl = useRef(null);
+
+  // Re-measure the hovered book's position on scroll so the popup tracks it
+  useEffect(() => {
+    if (!hoveredEntry) return;
+    function onScroll() {
+      if (hoveredEl.current) {
+        setPopupRect(hoveredEl.current.getBoundingClientRect());
+      }
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [hoveredEntry]);
 
   useEffect(() => {
     if (session) fetchBooks();
@@ -125,7 +138,7 @@ export default function MyBooksPage() {
     const { data, error } = await supabase
       .from("user_books")
       .select(
-        "id, condition, created_at, book:books(id, google_books_id, title, authors, thumbnail, published_date)"
+        "id, condition, created_at, book:books(id, google_books_id, title, authors, thumbnail, published_date, genre)"
       )
       .eq("user_id", session.user.id)
       .order("created_at", { ascending: false });
@@ -174,6 +187,7 @@ export default function MyBooksPage() {
           published_date: info.publishedDate || null,
           page_count: info.pageCount || null,
           categories: info.categories || [],
+          genre: info.categories?.[0] || null,
         },
         { onConflict: "google_books_id" }
       )
@@ -246,16 +260,13 @@ export default function MyBooksPage() {
     setBooks((prev) => prev.filter((b) => b.id !== entryId));
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
-  }
-
   // ── Hover handlers ────────────────────────────────────────
   // Use a short leave-timer so the user can move from spine → popup
   // without the card disappearing.
 
   function onBookEnter(entry, e) {
     clearTimeout(leaveTimer.current);
+    hoveredEl.current = e.currentTarget;
     const rect = e.currentTarget.getBoundingClientRect();
     setHoveredEntry(entry);
     setPopupRect(rect);
@@ -289,35 +300,14 @@ export default function MyBooksPage() {
 
   return (
     <div className="lib-page">
-      {/* Header */}
-      <header className="lib-header">
-        <h1 className="lib-title">My Library</h1>
-        <div className="lib-header-actions">
-          {session ? (
-            <>
-              {!showSearch && (
-                <button
-                  className="btn-primary"
-                  onClick={() => setShowSearch(true)}
-                >
-                  + Add Book
-                </button>
-              )}
-              <button className="btn-ghost" onClick={signOut}>
-                Sign Out
-              </button>
-            </>
-          ) : (
-            <button
-              className="btn-primary"
-              onClick={() => setShowLogin((v) => !v)}
-            >
-              Sign In
-            </button>
-          )}
-          {showLogin && <Auth onClose={() => setShowLogin(false)} />}
-        </div>
-      </header>
+      {showLogin && <Auth onClose={() => setShowLogin(false)} />}
+
+      {/* Floating Add Book button */}
+      {session && !showSearch && (
+        <button className="lib-fab-add" onClick={() => setShowSearch(true)}>
+          + Add Book
+        </button>
+      )}
 
       {/* Search / Add Panel */}
       {showSearch && (
@@ -520,6 +510,9 @@ export default function MyBooksPage() {
             <div className="book-card-year">
               {hoveredEntry.book.published_date.slice(0, 4)}
             </div>
+          )}
+          {hoveredEntry.book.genre && (
+            <div className="book-card-genre">{hoveredEntry.book.genre}</div>
           )}
 
           {isEditing ? (
