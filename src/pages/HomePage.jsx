@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import BookCarousel from "../components/BookCarousel";
 import UserCarousel from "../components/UserCarousel";
 import HeroPoster from "../components/HeroPoster";
 import Banner from "../components/Banner";
-import { SAMPLE_USERS } from "../data/users";
 import { supabase } from "../lib/supabaseClient";
 import "./HomePage.css";
 
@@ -28,7 +27,7 @@ const CATEGORIES_MID = [
 ];
 
 const CATEGORIES_BOTTOM = [
-  { title: "Fiction",    description: "The past brought to life through unforgettable characters." },
+  { title: "Fiction",    description: "Imaginative stories and compelling narratives across every world and era." },
   { title: "Horror",     description: "Spine-chilling reads for those who dare to turn the page." },
   { title: "Sci-Fi",     description: "Worlds beyond imagination, from dystopias to deep space." },
   { title: "Textbooks",  description: "Academic titles for students — swap last semester's books for next semester's." },
@@ -59,6 +58,8 @@ function toListing(listing, usernameById) {
     pageCount:    book.page_count,
     publishedDate: book.published_date,
     seller:       usernameById[listing.user_id] ?? "Unknown",
+    sellerId:     listing.user_id,
+    description:  book.description ?? null,
     notes:        listing.notes ?? null,
   };
 }
@@ -66,6 +67,22 @@ function toListing(listing, usernameById) {
 export default function HomePage() {
   const location = useLocation();
   const [listings, setListings] = useState([]);
+
+  const users = useMemo(() => {
+    const map = {};
+    for (const listing of listings) {
+      const key = listing.sellerId;
+      if (!key) continue;
+      if (!map[key]) {
+        map[key] = { id: key, name: listing.seller, thumbnails: [], listingCount: 0 };
+      }
+      map[key].listingCount++;
+      if (map[key].thumbnails.length < 4 && listing.thumbnail) {
+        map[key].thumbnails.push(listing.thumbnail.replace("http://", "https://"));
+      }
+    }
+    return Object.values(map);
+  }, [listings]);
 
   useEffect(() => {
     if (location.hash) {
@@ -76,9 +93,16 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchListings() {
-      const { data: tradeRows, error: tradeError } = await supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentUserId = session?.user?.id ?? null;
+
+      let query = supabase
         .from("trade_listings")
-        .select("id, condition, notes, book_id, user_id");
+        .select("id, condition, notes, book_id, user_id")
+        .eq("status", "active");
+      if (currentUserId) query = query.neq("user_id", currentUserId);
+
+      const { data: tradeRows, error: tradeError } = await query;
 
       if (tradeError) { console.error("trade_listings error:", tradeError); return; }
       if (!tradeRows?.length) return;
@@ -90,7 +114,7 @@ export default function HomePage() {
         await Promise.all([
           supabase
             .from("books")
-            .select("id, google_books_id, title, authors, thumbnail, genre, page_count, published_date")
+            .select("id, google_books_id, title, authors, thumbnail, genre, page_count, published_date, description")
             .in("id", bookIds),
           supabase
             .from("users")
@@ -129,7 +153,7 @@ export default function HomePage() {
         />
       ))}
 
-      <UserCarousel users={SAMPLE_USERS} />
+      <UserCarousel users={users} />
 
       {CATEGORIES_MID.map((cat) => (
         <BookCarousel

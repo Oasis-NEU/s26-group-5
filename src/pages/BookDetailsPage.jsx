@@ -1,4 +1,4 @@
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { getBookById, SAMPLE_BOOKS } from "../data/books";
 import BookCarousel from "../components/BookCarousel";
 import "./BookDetailsPage.css";
@@ -7,6 +7,7 @@ export default function BookDetailsPage() {
   const { bookId } = useParams();
   const location = useLocation();
   const book = location.state?.book ?? getBookById(bookId);
+  const navigate = useNavigate();
 
   if (!book) {
     return (
@@ -64,6 +65,13 @@ export default function BookDetailsPage() {
           <p className="book-details-author">by {book.author}</p>
           <p className="book-details-listed-by">Listed by <span>{book.seller}</span></p>
 
+          {book.description && (
+            <div className="book-details-section">
+              <h3 className="book-details-section-title">About this Book</h3>
+              <p className="book-details-description">{book.description}</p>
+            </div>
+          )}
+
           <div className="book-details-meta-grid">
             <div className="book-details-meta-item">
               <span className="detail-label">Published</span>
@@ -83,13 +91,6 @@ export default function BookDetailsPage() {
             </div>
           </div>
 
-          {book.description && (
-            <div className="book-details-section">
-              <h3 className="book-details-section-title">About this Book</h3>
-              <p className="book-details-description">{book.description}</p>
-            </div>
-          )}
-
           {book.notes && (
             <div className="book-details-section">
               <h3 className="book-details-section-title">Details</h3>
@@ -98,7 +99,19 @@ export default function BookDetailsPage() {
           )}
 
           <div className="book-details-actions">
-            <button type="button" className="book-details-primary-btn">Propose a Trade</button>
+            <button
+              type="button"
+              className="book-details-primary-btn"
+              onClick={() => navigate('/trade', {
+                state: {
+                  theirUserId:      book.sellerId,
+                  theirName:        book.seller,
+                  prefilledGoogleId: book.id,
+                },
+              })}
+            >
+              Propose a Trade
+            </button>
           </div>
         </div>
 
