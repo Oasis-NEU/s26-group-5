@@ -40,13 +40,21 @@ export default function BookDetailsPage() {
 
         {/* Left: Cover */}
         <div className="book-details-cover-panel">
-          <div className="book-details-cover" style={{ backgroundColor: book.coverColor }}>
+          <div className="book-details-cover" style={{ backgroundColor: book.thumbnail ? "transparent" : book.coverColor }}>
+            {book.thumbnail ? (
+              <img
+                src={book.thumbnail.replace("http://", "https://")}
+                alt={book.title}
+                className="book-details-cover-img"
+              />
+            ) : (
+              <span className="book-details-cover-label">Book Cover</span>
+            )}
             <button type="button" className="book-details-heart-btn" title="Save Listing">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
               </svg>
             </button>
-            <span className="book-details-cover-label">Book Cover</span>
           </div>
         </div>
 
@@ -67,7 +75,7 @@ export default function BookDetailsPage() {
             </div>
             <div className="book-details-meta-item">
               <span className="detail-label">Pages</span>
-              <span className="detail-value">{book.pages}</span>
+              <span className="detail-value">{book.pageCount ?? "Unknown"}</span>
             </div>
             <div className="book-details-meta-item">
               <span className="detail-label">Condition</span>
@@ -82,10 +90,10 @@ export default function BookDetailsPage() {
             </div>
           )}
 
-          {book.sellerNote && (
+          {book.notes && (
             <div className="book-details-section">
-              <h3 className="book-details-section-title">Seller Notes</h3>
-              <p className="book-details-description">{book.sellerNote}</p>
+              <h3 className="book-details-section-title">Details</h3>
+              <p className="book-details-description">{book.notes}</p>
             </div>
           )}
 
