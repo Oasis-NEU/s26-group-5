@@ -38,13 +38,32 @@ export default function Auth({ onClose }) {
     setLoading(true);
     setError(null);
     setMessage(null);
-    const { error } = await supabase.auth.signUp({
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { display_name: username } },
     });
-    if (error) setError(error.message);
-    else setMessage("Account created!");
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from("users")
+        .insert({ user_id: data.user.id, username });
+
+      if (profileError) {
+        setError("Failed to save profile: " + profileError.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    setMessage("Account created!");
     setLoading(false);
   }
 
