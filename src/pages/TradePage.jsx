@@ -422,16 +422,18 @@ export default function TradePage() {
 
                 const pendingRows = [
                     ...capturedMyOffer.map(e => ({
-                        trade_id: tradeId,
-                        old_user: session.user.id,
-                        new_user: theirUserId,
-                        book_id:  e.book.id,
+                        trade_id:    tradeId,
+                        proposer_id: session.user.id,
+                        old_user:    session.user.id,
+                        new_user:    theirUserId,
+                        book_id:     e.book.id,
                     })),
                     ...capturedTheirOffer.map(e => ({
-                        trade_id: tradeId,
-                        old_user: theirUserId,
-                        new_user: session.user.id,
-                        book_id:  e.book.id,
+                        trade_id:    tradeId,
+                        proposer_id: session.user.id,
+                        old_user:    theirUserId,
+                        new_user:    session.user.id,
+                        book_id:     e.book.id,
                     })),
                 ]
                 supabase

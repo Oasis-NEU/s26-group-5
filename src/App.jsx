@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import BookDetailsPage from "./pages/BookDetailsPage";
 import TradePage from "./pages/TradePage";
 import MyBooksPage from "./pages/MyBooksPage";
+import TradeRequestsPage from "./pages/TradeRequestsPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import AddBookPage from "./pages/AddBookPage";
 
@@ -46,6 +47,7 @@ function App() {
           <Route path="/library" element={<MyBooksPage />} />
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/add-book" element={<KeyedAddBook />} />
+          <Route path="/trade-requests" element={<TradeRequestsPage />} />
         </Route>
 
         {/*Non navbar pages*/}
