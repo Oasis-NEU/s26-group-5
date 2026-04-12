@@ -414,7 +414,7 @@
 
 .add-book-checkbox-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   padding: 14px 16px;
   border-radius: 8px;
@@ -426,12 +426,12 @@
   border-color: #3b2a1a;
   background: #faf7f3;
 }
-.add-book-checkbox-row input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  margin-top: 2px;
+.add-book-checkbox-row input[type="checkbox"],
+.add-book-checkbox-row input[type="radio"] {
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
-  accent-color: #3b2a1a;
+  accent-color: #c0392b;
   cursor: pointer;
 }
 .add-book-checkbox-text {

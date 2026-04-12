@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 import "./AddBookPage.css";
 
 const CONDITIONS = ["Like New", "Good", "Acceptable"];
@@ -24,11 +25,12 @@ export default function AddBookPage() {
   const [condition, setCondition] = useState(CONDITIONS[0]);
   const [sellerNotes, setSellerNotes] = useState("");
   const [photos, setPhotos] = useState([]); // [{ file, url }]
-  const [inLibrary, setInLibrary] = useState(true);
-  const [forTrade, setForTrade] = useState(false);
+  const [destination, setDestination] = useState("library"); // "library" | "trade"
 
   // Submit
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const photoInputRef = useRef(null);
 
@@ -62,8 +64,64 @@ export default function AddBookPage() {
     setPhotos((prev) => prev.filter((_, i) => i !== idx));
   }
 
-  function handleSubmit() {
-    if (!selectedBook || (!inLibrary && !forTrade)) return;
+  async function handleSubmit() {
+    if (!selectedBook || !destination) return;
+    setSubmitting(true);
+    setSubmitError(null);
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setSubmitError("You must be logged in to add a book.");
+      setSubmitting(false);
+      return;
+    }
+
+    const info = selectedBook.volumeInfo;
+
+    const { data: bookData, error: bookError } = await supabase
+      .from("books")
+      .upsert(
+        {
+          google_books_id: selectedBook.id,
+          title: info.title,
+          authors: info.authors || [],
+          description: info.description || null,
+          thumbnail: info.imageLinks?.thumbnail || null,
+          published_date: info.publishedDate || null,
+          page_count: info.pageCount || null,
+          categories: info.categories || [],
+          genre: info.categories?.[0] || null,
+        },
+        { onConflict: "google_books_id" }
+      )
+      .select("id")
+      .single();
+
+    if (bookError) {
+      setSubmitError("Failed to save book: " + bookError.message);
+      setSubmitting(false);
+      return;
+    }
+
+    const { error: linkError } = await supabase
+      .from("user_books")
+      .upsert(
+        {
+          user_id: session.user.id,
+          book_id: bookData.id,
+          condition,
+          notes: sellerNotes || null,
+        },
+        { onConflict: "user_id,book_id" }
+      );
+
+    if (linkError) {
+      setSubmitError("Failed to add to library: " + linkError.message);
+      setSubmitting(false);
+      return;
+    }
+
+    setSubmitting(false);
     setSubmitted(true);
   }
 
@@ -74,29 +132,25 @@ export default function AddBookPage() {
     setCondition(CONDITIONS[0]);
     setSellerNotes("");
     setPhotos([]);
-    setInLibrary(true);
-    setForTrade(false);
+    setDestination("library");
     setSubmitted(false);
+    setSubmitError(null);
   }
 
   const info = selectedBook?.volumeInfo;
-  const canSubmit = !!selectedBook && (inLibrary || forTrade);
+  const canSubmit = !!selectedBook && !!destination;
 
   // ── Success screen ────────────────────────────────────────
   if (submitted) {
-    const destination =
-      inLibrary && forTrade
-        ? "Added to your library and listed for trade."
-        : inLibrary
-        ? "Added to your library."
-        : "Listed for trade.";
+    const destinationMsg =
+      destination === "library" ? "Added to your library." : "Listed for trade.";
 
     return (
       <div className="add-book-page">
         <div className="add-book-success">
           <div className="add-book-success-icon">✓</div>
           <h2>Book added!</h2>
-          <p>{destination}</p>
+          <p>{destinationMsg}</p>
           <div className="add-book-success-actions">
             <button className="abp-btn-primary" onClick={() => navigate("/library")}>
               Go to My Library
@@ -273,11 +327,12 @@ export default function AddBookPage() {
               <div className="add-book-field">
                 <span className="add-book-label">Where to add</span>
                 <div className="add-book-checkboxes">
-                  <label className={`add-book-checkbox-row${inLibrary ? " checked" : ""}`}>
+                  <label className={`add-book-checkbox-row${destination === "library" ? " checked" : ""}`}>
                     <input
-                      type="checkbox"
-                      checked={inLibrary}
-                      onChange={(e) => setInLibrary(e.target.checked)}
+                      type="radio"
+                      name="destination"
+                      checked={destination === "library"}
+                      onChange={() => setDestination("library")}
                     />
                     <div className="add-book-checkbox-text">
                       <span className="add-book-checkbox-title">My Library</span>
@@ -286,11 +341,12 @@ export default function AddBookPage() {
                       </span>
                     </div>
                   </label>
-                  <label className={`add-book-checkbox-row${forTrade ? " checked" : ""}`}>
+                  <label className={`add-book-checkbox-row${destination === "trade" ? " checked" : ""}`}>
                     <input
-                      type="checkbox"
-                      checked={forTrade}
-                      onChange={(e) => setForTrade(e.target.checked)}
+                      type="radio"
+                      name="destination"
+                      checked={destination === "trade"}
+                      onChange={() => setDestination("trade")}
                     />
                     <div className="add-book-checkbox-text">
                       <span className="add-book-checkbox-title">List for Trade</span>
@@ -300,17 +356,15 @@ export default function AddBookPage() {
                     </div>
                   </label>
                 </div>
-                {!inLibrary && !forTrade && (
-                  <p className="add-book-checkbox-error">Please select at least one option.</p>
-                )}
               </div>
 
+              {submitError && <p className="add-book-checkbox-error">{submitError}</p>}
               <button
                 className="abp-btn-primary add-book-submit"
                 onClick={handleSubmit}
-                disabled={!canSubmit}
+                disabled={!canSubmit || submitting}
               >
-                Add Book
+                {submitting ? "Adding..." : "Add Book"}
               </button>
             </div>
           </div>
