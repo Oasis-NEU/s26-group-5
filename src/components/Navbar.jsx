@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Auth from "./Auth";
 import { searchBooks } from "../api/googleBooks";
+import { supabase } from "../lib/supabaseClient";
 import "./Navbar.css";
 
 const GENRES = ["Mystery", "Romance", "Historical Fiction", "Horror", "Sci-Fi", "Textbooks"];
@@ -12,9 +13,24 @@ export default function Navbar() {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogin, setShowLogin] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef(null);
+  const userRef = useRef(null);
+
+  // Auth state
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) setShowLogin(false);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Debounced suggestions fetch
   useEffect(() => {
@@ -44,6 +60,9 @@ export default function Navbar() {
     function handleClickOutside(e) {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setShowSuggestions(false);
+      }
+      if (userRef.current && !userRef.current.contains(e.target)) {
+        setShowUserMenu(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -160,12 +179,35 @@ export default function Navbar() {
             </svg>
           </button>
 
-          <div className="navbar-login-wrapper">
-            <button className="navbar-login-btn" onClick={() => setShowLogin((v) => !v)}>
-              Log In
-            </button>
-            {showLogin && <Auth onClose={() => setShowLogin(false)} />}
-          </div>
+          {user ? (
+            <div className="navbar-user-wrapper" ref={userRef}>
+              <button className="navbar-user-btn" onClick={() => setShowUserMenu((v) => !v)}>
+                <div className="navbar-user-avatar">
+                  {(user.user_metadata?.display_name?.[0] ?? user.email[0]).toUpperCase()}
+                </div>
+                <span className="navbar-user-name">
+                  {user.user_metadata?.display_name ?? user.email}
+                </span>
+              </button>
+              {showUserMenu && (
+                <div className="navbar-user-menu">
+                  <button
+                    className="navbar-user-menu-item"
+                    onClick={() => { supabase.auth.signOut(); setShowUserMenu(false); }}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="navbar-login-wrapper">
+              <button className="navbar-login-btn" onClick={() => setShowLogin((v) => !v)}>
+                Log In
+              </button>
+              {showLogin && <Auth onClose={() => setShowLogin(false)} />}
+            </div>
+          )}
         </div>
       </div>
 
