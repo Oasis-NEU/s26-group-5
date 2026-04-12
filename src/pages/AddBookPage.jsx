@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import "./AddBookPage.css";
@@ -33,6 +33,10 @@ export default function AddBookPage() {
   const [submitError, setSubmitError] = useState(null);
 
   const photoInputRef = useRef(null);
+
+  useEffect(() => {
+    if (submitted) window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [submitted]);
 
   async function handleSearch() {
     if (!query.trim()) return;
@@ -103,22 +107,39 @@ export default function AddBookPage() {
       return;
     }
 
-    const { error: linkError } = await supabase
-      .from("user_books")
-      .upsert(
-        {
+    if (destination === "library") {
+      const { error: linkError } = await supabase
+        .from("user_books")
+        .upsert(
+          {
+            user_id: session.user.id,
+            book_id: bookData.id,
+            condition,
+            notes: sellerNotes || null,
+          },
+          { onConflict: "user_id,book_id" }
+        );
+
+      if (linkError) {
+        setSubmitError("Failed to add to library: " + linkError.message);
+        setSubmitting(false);
+        return;
+      }
+    } else {
+      const { error: tradeError } = await supabase
+        .from("trade_listings")
+        .insert({
           user_id: session.user.id,
           book_id: bookData.id,
           condition,
           notes: sellerNotes || null,
-        },
-        { onConflict: "user_id,book_id" }
-      );
+        });
 
-    if (linkError) {
-      setSubmitError("Failed to add to library: " + linkError.message);
-      setSubmitting(false);
-      return;
+      if (tradeError) {
+        setSubmitError("Failed to create listing: " + tradeError.message);
+        setSubmitting(false);
+        return;
+      }
     }
 
     setSubmitting(false);
