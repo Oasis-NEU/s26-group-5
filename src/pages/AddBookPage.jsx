@@ -42,10 +42,11 @@ export default function AddBookPage() {
     const state = location.state;
 
     if (state?.book) {
-      const { book, condition: preCondition, notes: preNotes } = state;
+      const { book, condition: preCondition, notes: preNotes, userBookId } = state;
       setSelectedBook({
         id: book.google_books_id,
         _supabaseBookId: book.id,
+        _libraryEntryId: userBookId ?? null,
         volumeInfo: {
           title: book.title,
           authors: book.authors || [],
@@ -212,6 +213,10 @@ export default function AddBookPage() {
         setSubmitError("Failed to create listing: " + listingError.message);
         setSubmitting(false);
         return;
+      }
+
+      if (selectedBook._libraryEntryId) {
+        await supabase.from("user_books").delete().eq("id", selectedBook._libraryEntryId);
       }
     }
 

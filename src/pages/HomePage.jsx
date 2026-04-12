@@ -28,7 +28,7 @@ const CATEGORIES_MID = [
 ];
 
 const CATEGORIES_BOTTOM = [
-  { title: "Fiction",    description: "The past brought to life through unforgettable characters." },
+  { title: "Fiction",    description: "Imaginative stories and compelling narratives across every world and era." },
   { title: "Horror",     description: "Spine-chilling reads for those who dare to turn the page." },
   { title: "Sci-Fi",     description: "Worlds beyond imagination, from dystopias to deep space." },
   { title: "Textbooks",  description: "Academic titles for students — swap last semester's books for next semester's." },
@@ -76,9 +76,15 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchListings() {
-      const { data: tradeRows, error: tradeError } = await supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentUserId = session?.user?.id ?? null;
+
+      let query = supabase
         .from("trade_listings")
         .select("id, condition, notes, book_id, user_id");
+      if (currentUserId) query = query.neq("user_id", currentUserId);
+
+      const { data: tradeRows, error: tradeError } = await query;
 
       if (tradeError) { console.error("trade_listings error:", tradeError); return; }
       if (!tradeRows?.length) return;

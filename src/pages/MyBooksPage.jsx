@@ -135,7 +135,8 @@ export default function MyBooksPage() {
       .select("id, condition, notes, status, created_at, book:books(id, title, authors, thumbnail, genre)")
       .eq("user_id", session.user.id)
       .order("created_at", { ascending: false });
-    if (!error) setListings(data || []);
+    if (error) console.error("fetchListings error:", error);
+    else setListings(data || []);
     setLoadingListings(false);
   }
 
@@ -160,7 +161,7 @@ export default function MyBooksPage() {
   function listForTrade(entry) {
     setHoveredEntry(null);
     navigate("/add-book", {
-      state: { book: entry.book, condition: entry.condition, notes: entry.notes },
+      state: { book: entry.book, condition: entry.condition, notes: entry.notes, userBookId: entry.id },
     });
   }
 
@@ -201,6 +202,11 @@ export default function MyBooksPage() {
   for (let i = 0; i < books.length; i += BOOKS_PER_SHELF)
     shelves.push(books.slice(i, i + BOOKS_PER_SHELF));
   while (shelves.length < MIN_SHELVES) shelves.push([]);
+
+  const listingShelves = [];
+  for (let i = 0; i < listings.length; i += BOOKS_PER_SHELF)
+    listingShelves.push(listings.slice(i, i + BOOKS_PER_SHELF));
+  while (listingShelves.length < MIN_SHELVES) listingShelves.push([]);
 
   const isAlreadyListed = hoveredEntry
     ? listings.some((l) => l.book?.id === hoveredEntry.book.id)
@@ -298,77 +304,56 @@ export default function MyBooksPage() {
 
       {/* ── My Listings Tab ── */}
       {activeTab === "listings" && (
-        <div className="lib-listings-section">
-          <div className="lib-listings-inner">
+        <div className="lib-shelves">
+          <div className="bookcase-outer">
+            <div className="bookcase">
+              <div className="bookcase-crown" />
 
-            {!session && (
-              <div className="lib-listings-empty">
-                <p>Sign in to see your listings.</p>
-              </div>
-            )}
+              {listingShelves.map((shelfListings, shelfIdx) => (
+                <div className="bookcase-row" key={shelfIdx}>
+                  <div className="shelf-interior">
+                    {shelfIdx === 0 && !session && (
+                      <p className="shelf-empty-msg">Sign in to see your listings</p>
+                    )}
+                    {shelfIdx === 0 && session && loadingListings && (
+                      <p className="shelf-empty-msg">Loading your listings...</p>
+                    )}
+                    {shelfIdx === 0 && session && !loadingListings && listings.length === 0 && (
+                      <p className="shelf-empty-msg">No listings yet — list a book for trade to get started</p>
+                    )}
 
-            {session && loadingListings && (
-              <div className="lib-listings-empty">
-                <p>Loading your listings...</p>
-              </div>
-            )}
+                    {shelfListings.map((entry) => {
+                      const book = entry.book;
+                      const { height, width } = spineDimensions(book.title);
+                      const color    = spineColor(book.title);
+                      const isActive = hoveredEntry?.id === entry.id;
 
-            {session && !loadingListings && listings.length === 0 && (
-              <div className="lib-listings-empty">
-                <h3>No listings yet</h3>
-                <p>Books you list for trade will appear here.</p>
-              </div>
-            )}
-
-            {session && !loadingListings && listings.length > 0 && (
-              <div className="lib-listings-grid">
-                {listings.map((entry) => {
-                  const book = entry.book;
-                  return (
-                    <div className="listing-card" key={entry.id}>
-                      <div className="listing-card-cover">
-                        {book.thumbnail ? (
-                          <img src={book.thumbnail} alt="cover" />
-                        ) : (
-                          <div
-                            className="listing-card-cover-placeholder"
-                            style={{ background: spineColor(book.title) }}
-                          >
-                            <span className="listing-card-cover-label">{book.title}</span>
+                      return (
+                        <div
+                          className={`book${isActive ? " book-active" : ""}`}
+                          key={entry.id}
+                          onMouseEnter={(e) => onBookEnter(entry, e)}
+                          onMouseLeave={onBookLeave}
+                        >
+                          <div className="book-spine" style={{ background: color, height, width }}>
+                            <span className="book-spine-title">{book.title}</span>
                           </div>
-                        )}
-                      </div>
-                      <div className="listing-card-body">
-                        <h3 className="listing-card-title">{book.title}</h3>
-                        <p className="listing-card-author">{book.authors?.join(", ")}</p>
-                        <div className="listing-card-meta">
-                          <span className="listing-card-condition">{entry.condition}</span>
-                          <span
-                            className="listing-card-status"
-                            style={{ color: STATUS_COLORS[entry.status] ?? "#6b7280" }}
-                          >
-                            ● {entry.status}
-                          </span>
                         </div>
-                      </div>
-                      <div className="listing-card-actions">
-                        <button className="btn-edit">Edit</button>
-                        <button className="btn-remove" onClick={() => removeListing(entry.id)}>
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                      );
+                    })}
+                  </div>
+                  <div className="shelf-plank" />
+                </div>
+              ))}
 
+              <div className="bookcase-base" />
+            </div>
           </div>
         </div>
       )}
 
-      {/* Hover popup — only in My Books tab */}
-      {activeTab === "books" && hoveredEntry && (
+      {/* Hover popup */}
+      {hoveredEntry && (
         <div
           className="book-popup-fixed"
           style={popupStyle}
@@ -383,20 +368,37 @@ export default function MyBooksPage() {
 
           <div className="book-card-title">{hoveredEntry.book.title}</div>
           <div className="book-card-author">{hoveredEntry.book.authors?.join(", ")}</div>
-          {hoveredEntry.book.published_date && (
+
+          {activeTab === "books" && hoveredEntry.book.published_date && (
             <div className="book-card-year">{hoveredEntry.book.published_date.slice(0, 4)}</div>
           )}
 
-          {isAlreadyListed ? (
-            <div className="book-card-listed-badge">Already listed for trade</div>
-          ) : (
-            <button className="btn-list-trade" onClick={() => listForTrade(hoveredEntry)}>
-              List for Trade
-            </button>
+          {activeTab === "listings" && (
+            <div className="book-card-year" style={{ color: STATUS_COLORS[hoveredEntry.status] ?? "#6b7280" }}>
+              ● {hoveredEntry.status}
+            </div>
           )}
+
+          {activeTab === "books" && (
+            isAlreadyListed ? (
+              <div className="book-card-listed-badge">Already listed for trade</div>
+            ) : (
+              <button className="btn-list-trade" onClick={() => listForTrade(hoveredEntry)}>
+                List for Trade
+              </button>
+            )
+          )}
+
           <div className="book-card-actions">
-            <button className="btn-edit" onClick={() => editBook(hoveredEntry)}>Edit</button>
-            <button className="btn-remove" onClick={() => removeBook(hoveredEntry.id)}>Remove</button>
+            {activeTab === "books" && (
+              <button className="btn-edit" onClick={() => editBook(hoveredEntry)}>Edit</button>
+            )}
+            <button
+              className="btn-remove"
+              onClick={() => activeTab === "books" ? removeBook(hoveredEntry.id) : removeListing(hoveredEntry.id)}
+            >
+              Remove
+            </button>
           </div>
         </div>
       )}
