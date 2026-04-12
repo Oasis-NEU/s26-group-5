@@ -29,25 +29,33 @@ export default function Navbar() {
   }, [user]);
 
   // Trade request badge count
-  useEffect(() => {
+  async function fetchTradeCount() {
     if (!user) { setTradeRequestCount(0); return; }
+    const { data } = await supabase
+      .from("pending_trades")
+      .select("trade_id")
+      .neq("proposer_id", user.id)
+      .or(`old_user.eq.${user.id},new_user.eq.${user.id}`);
+    setTradeRequestCount(new Set(data?.map((r) => r.trade_id)).size);
+  }
 
-    async function fetchCount() {
-      const { data } = await supabase
-        .from("pending_trades")
-        .select("trade_id")
-        .neq("proposer_id", user.id)
-        .or(`old_user.eq.${user.id},new_user.eq.${user.id}`);
-      setTradeRequestCount(new Set(data?.map((r) => r.trade_id)).size);
-    }
+  // Fetch on login/logout
+  useEffect(() => {
+    fetchTradeCount();
+  }, [user]);
 
-    fetchCount();
+  // Refetch on every route change so accept/decline is reflected immediately
+  useEffect(() => {
+    fetchTradeCount();
+  }, [location.pathname]);
 
+  // Realtime updates as a bonus (works if Supabase replication is enabled)
+  useEffect(() => {
+    if (!user) return;
     const channel = supabase
       .channel("trade-requests-badge")
-      .on("postgres_changes", { event: "*", schema: "public", table: "pending_trades" }, fetchCount)
+      .on("postgres_changes", { event: "*", schema: "public", table: "pending_trades" }, fetchTradeCount)
       .subscribe();
-
     return () => supabase.removeChannel(channel);
   }, [user]);
 

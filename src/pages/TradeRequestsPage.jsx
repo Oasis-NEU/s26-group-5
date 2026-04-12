@@ -94,6 +94,7 @@ export default function TradeRequestsPage() {
 
   async function acceptTrade(trade) {
     setAccepting(trade.tradeId)
+    setTrades(prev => prev.filter(t => t.tradeId !== trade.tradeId))
     const userId = session.user.id
 
     // 1. Insert received books for both parties
@@ -131,12 +132,12 @@ export default function TradeRequestsPage() {
       .eq('trade_id', trade.tradeId)
     if (ptError) console.error('pending_trades delete failed:', ptError)
 
-    setTrades(prev => prev.filter(t => t.tradeId !== trade.tradeId))
     setAccepting(null)
   }
 
   async function declineTrade(trade) {
     setDeclining(trade.tradeId)
+    setTrades(prev => prev.filter(t => t.tradeId !== trade.tradeId))
 
     // Revert trade_listings back to active
     for (const row of trade.rows) {
@@ -148,7 +149,6 @@ export default function TradeRequestsPage() {
     }
 
     await supabase.from('pending_trades').delete().eq('trade_id', trade.tradeId)
-    setTrades(prev => prev.filter(t => t.tradeId !== trade.tradeId))
     setDeclining(null)
   }
 
