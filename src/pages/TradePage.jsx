@@ -278,6 +278,7 @@ export default function TradePage() {
             .from('trade_listings')
             .select('id, condition, book:books(id, title, authors, thumbnail, genre)')
             .eq('user_id', session.user.id)
+            .eq('status', 'active')
             .order('created_at', { ascending: false })
         if (data) setMyListings(data)
     }
@@ -292,6 +293,7 @@ export default function TradePage() {
             .from('trade_listings')
             .select('id, condition, book:books(id, google_books_id, title, authors, thumbnail, genre)')
             .eq('user_id', theirUserId)
+            .eq('status', 'active')
             .order('created_at', { ascending: false })
         if (!data) return
         setTheirListings(data)
