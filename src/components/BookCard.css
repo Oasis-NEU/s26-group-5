@@ -6,9 +6,9 @@
 
 .book-card {
   display: grid;
-  grid-template-rows: 25vh 1fr;
+  grid-template-rows: 18vh 1fr;
   gap: 1.6vh;
-  height: 42vh;
+  height: 35vh;
   padding: 0.7vw;
   border-radius: 1.2vw;
   border: 1px solid #e5e7eb;
@@ -23,8 +23,18 @@
   border-color: #d1d5db;
 }
 
+.book-cover-img {
+  height: 18vh;
+  min-height: 0;
+  width: 100%;
+  border-radius: 1vw;
+  object-fit: contain;
+  display: block;
+  background-color: #f3f4f6;
+}
+
 .book-cover-artwork {
-  height: 25vh;
+  height: 18vh;
   min-height: 0;
   border-radius: 1vw;
   display: flex;
@@ -69,6 +79,31 @@
   margin: 0;
   font-size: 0.76vw;
   color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.book-card-tag {
+  font-size: 11px;
+  color: #6b7280;
+  background: #f3f4f6;
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.book-card-seller {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #9ca3af;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

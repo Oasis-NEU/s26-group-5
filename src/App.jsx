@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import PublicLayout from "./layouts/PublicLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import HomePage from "./pages/HomePage";
@@ -7,6 +8,12 @@ import TradePage from "./pages/TradePage";
 import MyBooksPage from "./pages/MyBooksPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import AddBookPage from "./pages/AddBookPage";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 
 // Forces AddBookPage to fully remount on every navigation to /add-book,
 // giving a clean form state without effects fighting against the router.
@@ -27,6 +34,7 @@ function PlaceholderPage({ title }) {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
 
         {/*Navbar pages*/}
