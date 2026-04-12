@@ -69,7 +69,7 @@ export default function Navbar() {
       searchBooks(searchQuery, 5)
         .then(setSuggestions)
         .catch(() => setSuggestions([]));
-    }, 200);
+    }, 100);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 

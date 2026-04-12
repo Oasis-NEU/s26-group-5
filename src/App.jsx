@@ -17,13 +17,13 @@ function ScrollToTop() {
 }
 
 const PAGE_TITLES = {
-  "/":               "BookX — Home",
-  "/browse":         "BookX — Browse",
-  "/trade":          "BookX — Trade",
-  "/library":        "BookX — My Library",
-  "/trade-requests": "BookX — Trade Requests",
-  "/add-book":       "BookX — Add Book",
-  "/search":         "BookX — Search",
+  "/":               "BookX",
+  "/browse":         "BookX - Browse",
+  "/trade":          "BookX - Trade",
+  "/library":        "BookX - My Library",
+  "/trade-requests": "BookX - Trade Requests",
+  "/add-book":       "BookX - Add Book",
+  "/search":         "BookX - Search",
 };
 
 function TitleManager() {

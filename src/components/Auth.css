@@ -9,6 +9,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   padding: 20px;
   z-index: 200;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
 
 .auth-header {
