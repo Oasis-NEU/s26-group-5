@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import "./AddBookPage.css";
 
@@ -12,6 +12,28 @@ const CONDITION_HINTS = {
 
 export default function AddBookPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Pre-populate when coming from "List for Trade" in My Library
+  useEffect(() => {
+    const state = location.state;
+    if (!state?.book) return;
+    const { book, condition: preCondition, notes: preNotes } = state;
+    setSelectedBook({
+      id: book.google_books_id,
+      _supabaseBookId: book.id,
+      volumeInfo: {
+        title: book.title,
+        authors: book.authors || [],
+        imageLinks: book.thumbnail ? { thumbnail: book.thumbnail } : undefined,
+        publishedDate: book.published_date,
+        categories: book.genre ? [book.genre] : [],
+      },
+    });
+    if (preCondition) setCondition(preCondition);
+    if (preNotes) setSellerNotes(preNotes);
+    setDestination("trade");
+  }, []);
 
   // Search
   const [query, setQuery] = useState("");
@@ -82,61 +104,61 @@ export default function AddBookPage() {
 
     const info = selectedBook.volumeInfo;
 
-    const { data: bookData, error: bookError } = await supabase
-      .from("books")
-      .upsert(
-        {
-          google_books_id: selectedBook.id,
-          title: info.title,
-          authors: info.authors || [],
-          description: info.description || null,
-          thumbnail: info.imageLinks?.thumbnail || null,
-          published_date: info.publishedDate || null,
-          page_count: info.pageCount || null,
-          categories: info.categories || [],
-          genre: info.categories?.[0] || null,
-        },
-        { onConflict: "google_books_id" }
-      )
-      .select("id")
-      .single();
+    // If coming from My Library the book already exists — skip the upsert
+    let bookId = selectedBook._supabaseBookId ?? null;
 
-    if (bookError) {
-      setSubmitError("Failed to save book: " + bookError.message);
-      setSubmitting(false);
-      return;
+    if (!bookId) {
+      const { data: bookData, error: bookError } = await supabase
+        .from("books")
+        .upsert(
+          {
+            google_books_id: selectedBook.id,
+            title: info.title,
+            authors: info.authors || [],
+            description: info.description || null,
+            thumbnail: info.imageLinks?.thumbnail || null,
+            published_date: info.publishedDate || null,
+            page_count: info.pageCount || null,
+            categories: info.categories || [],
+            genre: info.categories?.[0] || null,
+          },
+          { onConflict: "google_books_id" }
+        )
+        .select("id")
+        .single();
+
+      if (bookError) {
+        setSubmitError("Failed to save book: " + bookError.message);
+        setSubmitting(false);
+        return;
+      }
+      bookId = bookData.id;
     }
 
     if (destination === "library") {
       const { error: linkError } = await supabase
         .from("user_books")
         .upsert(
-          {
-            user_id: session.user.id,
-            book_id: bookData.id,
-            condition,
-            notes: sellerNotes || null,
-          },
+          { user_id: session.user.id, book_id: bookId, condition, notes: sellerNotes || null },
           { onConflict: "user_id,book_id" }
         );
-
       if (linkError) {
         setSubmitError("Failed to add to library: " + linkError.message);
         setSubmitting(false);
         return;
       }
     } else {
-      const { error: tradeError } = await supabase
-        .from("trade_listings")
+      const { error: listingError } = await supabase
+        .from("listings")
         .insert({
           user_id: session.user.id,
-          book_id: bookData.id,
+          book_id: bookId,
           condition,
-          notes: sellerNotes || null,
+          seller_notes: sellerNotes || null,
+          status: "active",
         });
-
-      if (tradeError) {
-        setSubmitError("Failed to create listing: " + tradeError.message);
+      if (listingError) {
+        setSubmitError("Failed to create listing: " + listingError.message);
         setSubmitting(false);
         return;
       }
@@ -158,8 +180,11 @@ export default function AddBookPage() {
     setSubmitError(null);
   }
 
-  const info = selectedBook?.volumeInfo;
-  const canSubmit = !!selectedBook && !!destination;
+  const info          = selectedBook?.volumeInfo;
+  const fromLibrary   = !!selectedBook?._supabaseBookId;
+  const isListingMode = destination === "trade" || fromLibrary;
+  const canSubmit     = !!selectedBook && !!destination &&
+    (!isListingMode || sellerNotes.trim().length > 0);
 
   // ── Success screen ────────────────────────────────────────
   if (submitted) {
@@ -195,9 +220,11 @@ export default function AddBookPage() {
           <button className="add-book-back" onClick={() => navigate(-1)}>
             ← Back
           </button>
-          <h1 className="add-book-title">Add a Book</h1>
+          <h1 className="add-book-title">{fromLibrary ? "List for Trade" : "Add a Book"}</h1>
           <p className="add-book-subtitle">
-            Search for your book, fill in the details, and choose where it goes.
+            {fromLibrary
+              ? "Fill in the details for your listing — condition and notes are required."
+              : "Search for your book, fill in the details, and choose where it goes."}
           </p>
         </div>
 
@@ -268,12 +295,14 @@ export default function AddBookPage() {
                   <div className="add-book-preview-detail">{info.categories[0]}</div>
                 )}
               </div>
-              <button
-                className="add-book-change-btn"
-                onClick={() => { setSelectedBook(null); setResults([]); }}
-              >
-                Change book
-              </button>
+              {!fromLibrary && (
+                <button
+                  className="add-book-change-btn"
+                  onClick={() => { setSelectedBook(null); setResults([]); }}
+                >
+                  Change book
+                </button>
+              )}
             </aside>
 
             {/* Right: form fields */}
@@ -281,7 +310,12 @@ export default function AddBookPage() {
 
               {/* Condition */}
               <div className="add-book-field">
-                <span className="add-book-label">Condition</span>
+                <span className="add-book-label">
+                  Condition{" "}
+                  {isListingMode
+                    ? <span className="add-book-required">*</span>
+                    : <span className="add-book-optional">(optional)</span>}
+                </span>
                 <div className="abp-condition-btns">
                   {CONDITIONS.map((c) => (
                     <button
@@ -299,7 +333,10 @@ export default function AddBookPage() {
               {/* Seller notes */}
               <div className="add-book-field">
                 <span className="add-book-label">
-                  Seller Notes <span className="add-book-optional">(optional)</span>
+                  Seller Notes{" "}
+                  {isListingMode
+                    ? <span className="add-book-required">*</span>
+                    : <span className="add-book-optional">(optional)</span>}
                 </span>
                 <textarea
                   className="add-book-textarea"
@@ -310,7 +347,7 @@ export default function AddBookPage() {
                 />
               </div>
 
-              {/* Photos */}
+              {/* Photos — optional for all, view only for now */}
               <div className="add-book-field">
                 <span className="add-book-label">
                   Photos <span className="add-book-optional">(optional, up to 6)</span>
@@ -344,8 +381,8 @@ export default function AddBookPage() {
                 </div>
               </div>
 
-              {/* Where to add */}
-              <div className="add-book-field">
+              {/* Where to add — hidden when coming from library (always listing for trade) */}
+              {!fromLibrary && <div className="add-book-field">
                 <span className="add-book-label">Where to add</span>
                 <div className="add-book-checkboxes">
                   <label className={`add-book-checkbox-row${destination === "library" ? " checked" : ""}`}>
@@ -377,7 +414,7 @@ export default function AddBookPage() {
                     </div>
                   </label>
                 </div>
-              </div>
+              </div>}
 
               {submitError && <p className="add-book-checkbox-error">{submitError}</p>}
               <button
@@ -385,7 +422,9 @@ export default function AddBookPage() {
                 onClick={handleSubmit}
                 disabled={!canSubmit || submitting}
               >
-                {submitting ? "Adding..." : "Add Book"}
+                {submitting
+                  ? (fromLibrary ? "Listing..." : "Adding...")
+                  : (fromLibrary ? "Create Listing" : "Add Book")}
               </button>
             </div>
           </div>
