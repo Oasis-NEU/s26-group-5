@@ -6,6 +6,7 @@ export default function Auth({ onClose }) {
   const [showSignUp, setShowSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
@@ -14,6 +15,7 @@ export default function Auth({ onClose }) {
     setShowSignUp(toSignUp);
     setEmail("");
     setPassword("");
+    setUsername("");
     setError(null);
     setMessage(null);
   }
@@ -36,9 +38,13 @@ export default function Auth({ onClose }) {
     setLoading(true);
     setError(null);
     setMessage(null);
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { display_name: username } },
+    });
     if (error) setError(error.message);
-    else setMessage("Account created! Check your email to confirm.");
+    else setMessage("Account created!");
     setLoading(false);
   }
 
@@ -70,6 +76,16 @@ export default function Auth({ onClose }) {
           onSubmit={showSignUp ? handleSignUp : handleSignIn}
           className="auth-form"
         >
+          {showSignUp && (
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              className="auth-input"
+            />
+          )}
           <input
             type="email"
             placeholder="Email"

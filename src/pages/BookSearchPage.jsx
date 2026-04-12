@@ -47,7 +47,7 @@ function BookSearch() {
     if (error) {
       alert("Error saving book: " + error.message);
     } else {
-      setSaved(book.title);
+      (book.title);
       setResults([]);
       setQuery("");
     }
