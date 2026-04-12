@@ -1,0 +1,321 @@
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import "./AddBookPage.css";
+
+const CONDITIONS = ["Like New", "Good", "Acceptable"];
+const CONDITION_HINTS = {
+  "Like New": "Barely read — no marks or damage.",
+  "Good": "Some wear but fully readable, no missing pages.",
+  "Acceptable": "Noticeable wear, but complete and readable.",
+};
+
+export default function AddBookPage() {
+  const navigate = useNavigate();
+
+  // Search
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+
+  // Selected book
+  const [selectedBook, setSelectedBook] = useState(null);
+
+  // Form fields
+  const [condition, setCondition] = useState(CONDITIONS[0]);
+  const [sellerNotes, setSellerNotes] = useState("");
+  const [photos, setPhotos] = useState([]); // [{ file, url }]
+  const [inLibrary, setInLibrary] = useState(true);
+  const [forTrade, setForTrade] = useState(false);
+
+  // Submit
+  const [submitted, setSubmitted] = useState(false);
+
+  const photoInputRef = useRef(null);
+
+  async function handleSearch() {
+    if (!query.trim()) return;
+    setSearching(true);
+    setResults([]);
+    const apiKey = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=6&key=${apiKey}`
+    );
+    const data = await res.json();
+    setResults(data.items || []);
+    setSearching(false);
+  }
+
+  function selectBook(item) {
+    setSelectedBook(item);
+    setResults([]);
+    setQuery("");
+  }
+
+  function handlePhotoAdd(e) {
+    const files = Array.from(e.target.files);
+    const newPhotos = files.map((file) => ({ file, url: URL.createObjectURL(file) }));
+    setPhotos((prev) => [...prev, ...newPhotos].slice(0, 6));
+    e.target.value = "";
+  }
+
+  function removePhoto(idx) {
+    setPhotos((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  function handleSubmit() {
+    if (!selectedBook || (!inLibrary && !forTrade)) return;
+    setSubmitted(true);
+  }
+
+  function resetForm() {
+    setSelectedBook(null);
+    setQuery("");
+    setResults([]);
+    setCondition(CONDITIONS[0]);
+    setSellerNotes("");
+    setPhotos([]);
+    setInLibrary(true);
+    setForTrade(false);
+    setSubmitted(false);
+  }
+
+  const info = selectedBook?.volumeInfo;
+  const canSubmit = !!selectedBook && (inLibrary || forTrade);
+
+  // ── Success screen ────────────────────────────────────────
+  if (submitted) {
+    const destination =
+      inLibrary && forTrade
+        ? "Added to your library and listed for trade."
+        : inLibrary
+        ? "Added to your library."
+        : "Listed for trade.";
+
+    return (
+      <div className="add-book-page">
+        <div className="add-book-success">
+          <div className="add-book-success-icon">✓</div>
+          <h2>Book added!</h2>
+          <p>{destination}</p>
+          <div className="add-book-success-actions">
+            <button className="abp-btn-primary" onClick={() => navigate("/library")}>
+              Go to My Library
+            </button>
+            <button className="abp-btn-ghost" onClick={resetForm}>
+              Add Another
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Main page ─────────────────────────────────────────────
+  return (
+    <div className="add-book-page">
+      <div className="add-book-inner">
+
+        {/* Header */}
+        <div className="add-book-header">
+          <button className="add-book-back" onClick={() => navigate(-1)}>
+            ← Back
+          </button>
+          <h1 className="add-book-title">Add a Book</h1>
+          <p className="add-book-subtitle">
+            Search for your book, fill in the details, and choose where it goes.
+          </p>
+        </div>
+
+        {/* Step 1: Search */}
+        {!selectedBook && (
+          <section className="add-book-section">
+            <div className="add-book-search-row">
+              <input
+                type="text"
+                className="add-book-search-input"
+                placeholder="Search by title or author..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+              <button className="abp-btn-primary" onClick={handleSearch} disabled={searching}>
+                {searching ? "Searching..." : "Search"}
+              </button>
+            </div>
+
+            {results.length > 0 && (
+              <ul className="add-book-results">
+                {results.map((item) => {
+                  const v = item.volumeInfo;
+                  return (
+                    <li key={item.id} className="add-book-result-item" onClick={() => selectBook(item)}>
+                      {v.imageLinks?.thumbnail ? (
+                        <img src={v.imageLinks.thumbnail} alt="cover" className="add-book-result-thumb" />
+                      ) : (
+                        <div className="add-book-result-thumb add-book-result-thumb--empty" />
+                      )}
+                      <div className="add-book-result-info">
+                        <div className="add-book-result-title">{v.title}</div>
+                        <div className="add-book-result-author">{v.authors?.join(", ")}</div>
+                        <div className="add-book-result-year">{v.publishedDate?.slice(0, 4)}</div>
+                      </div>
+                      <span className="add-book-result-cta">Select →</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+        )}
+
+        {/* Step 2: Form */}
+        {selectedBook && (
+          <div className="add-book-form-layout">
+
+            {/* Left: selected book preview */}
+            <aside className="add-book-preview">
+              <div className="add-book-preview-cover">
+                {info.imageLinks?.thumbnail ? (
+                  <img src={info.imageLinks.thumbnail} alt="cover" />
+                ) : (
+                  <div className="add-book-preview-no-cover">No Cover</div>
+                )}
+              </div>
+              <div className="add-book-preview-meta">
+                <div className="add-book-preview-book-title">{info.title}</div>
+                {info.authors && (
+                  <div className="add-book-preview-author">{info.authors.join(", ")}</div>
+                )}
+                {info.publishedDate && (
+                  <div className="add-book-preview-detail">{info.publishedDate.slice(0, 4)}</div>
+                )}
+                {info.categories?.[0] && (
+                  <div className="add-book-preview-detail">{info.categories[0]}</div>
+                )}
+              </div>
+              <button
+                className="add-book-change-btn"
+                onClick={() => { setSelectedBook(null); setResults([]); }}
+              >
+                Change book
+              </button>
+            </aside>
+
+            {/* Right: form fields */}
+            <div className="add-book-form">
+
+              {/* Condition */}
+              <div className="add-book-field">
+                <span className="add-book-label">Condition</span>
+                <div className="abp-condition-btns">
+                  {CONDITIONS.map((c) => (
+                    <button
+                      key={c}
+                      className={`abp-condition-btn${condition === c ? " active" : ""}`}
+                      onClick={() => setCondition(c)}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+                <p className="abp-condition-hint">{CONDITION_HINTS[condition]}</p>
+              </div>
+
+              {/* Seller notes */}
+              <div className="add-book-field">
+                <span className="add-book-label">
+                  Seller Notes <span className="add-book-optional">(optional)</span>
+                </span>
+                <textarea
+                  className="add-book-textarea"
+                  placeholder="Describe the book's condition in more detail, any highlights, damage, inscription, etc."
+                  value={sellerNotes}
+                  onChange={(e) => setSellerNotes(e.target.value)}
+                  rows={4}
+                />
+              </div>
+
+              {/* Photos */}
+              <div className="add-book-field">
+                <span className="add-book-label">
+                  Photos <span className="add-book-optional">(optional, up to 6)</span>
+                </span>
+                <div className="add-book-photos">
+                  {photos.map((p, i) => (
+                    <div key={i} className="add-book-photo-thumb">
+                      <img src={p.url} alt={`photo ${i + 1}`} />
+                      <button className="add-book-photo-remove" onClick={() => removePhoto(i)}>
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {photos.length < 6 && (
+                    <button
+                      className="add-book-photo-add"
+                      onClick={() => photoInputRef.current?.click()}
+                    >
+                      <span className="add-book-photo-add-icon">+</span>
+                      Add Photo
+                    </button>
+                  )}
+                  <input
+                    ref={photoInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={handlePhotoAdd}
+                  />
+                </div>
+              </div>
+
+              {/* Where to add */}
+              <div className="add-book-field">
+                <span className="add-book-label">Where to add</span>
+                <div className="add-book-checkboxes">
+                  <label className={`add-book-checkbox-row${inLibrary ? " checked" : ""}`}>
+                    <input
+                      type="checkbox"
+                      checked={inLibrary}
+                      onChange={(e) => setInLibrary(e.target.checked)}
+                    />
+                    <div className="add-book-checkbox-text">
+                      <span className="add-book-checkbox-title">My Library</span>
+                      <span className="add-book-checkbox-desc">
+                        Adds to your personal bookcase for display
+                      </span>
+                    </div>
+                  </label>
+                  <label className={`add-book-checkbox-row${forTrade ? " checked" : ""}`}>
+                    <input
+                      type="checkbox"
+                      checked={forTrade}
+                      onChange={(e) => setForTrade(e.target.checked)}
+                    />
+                    <div className="add-book-checkbox-text">
+                      <span className="add-book-checkbox-title">List for Trade</span>
+                      <span className="add-book-checkbox-desc">
+                        Makes this book visible to others who want to propose a trade
+                      </span>
+                    </div>
+                  </label>
+                </div>
+                {!inLibrary && !forTrade && (
+                  <p className="add-book-checkbox-error">Please select at least one option.</p>
+                )}
+              </div>
+
+              <button
+                className="abp-btn-primary add-book-submit"
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+              >
+                Add Book
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -39,14 +39,13 @@
 /* Shared track styles used by BookCarousel and UserCarousel */
 .carousel-track-clip {
   overflow-x: clip;
-  overflow-y: visible;
-  padding-top: 6px;
-  margin-top: -6px;
 }
 
 .carousel-track {
   display: flex;
   overflow-x: scroll;
+  padding-top: 8px;
+  margin-top: -8px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

@@ -19,10 +19,6 @@ export default function BookCard({
         <div className="book-card-content">
           <h2 className="book-card-title">{title}</h2>
           <p className="book-card-meta">Author: {author}</p>
-          <div className="book-card-bottom-row">
-            {condition && <span className="book-card-condition">{condition}</span>}
-            <span className="book-card-cta">View details</span>
-          </div>
         </div>
       </article>
     </Link>
