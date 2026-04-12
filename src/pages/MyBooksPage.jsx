@@ -137,6 +137,39 @@ export default function MyBooksPage() {
     });
   }
 
+  // ── Edit listing ──────────────────────────────────────────
+
+  function editListing(entry) {
+    setHoveredEntry(null);
+    navigate("/add-book", {
+      state: {
+        editListing: {
+          id: entry.id,
+          book: entry.book,
+          condition: entry.condition,
+          notes: entry.notes,
+        },
+      },
+    });
+  }
+
+  // ── Unlist (move listing → library) ───────────────────────
+
+  async function unlistBook(entry) {
+    setHoveredEntry(null);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { error: insertError } = await supabase
+      .from("user_books")
+      .upsert(
+        { user_id: session.user.id, book_id: entry.book.id, condition: entry.condition, notes: entry.notes || null },
+        { onConflict: "user_id,book_id" }
+      );
+    if (insertError) { console.error("unlistBook error:", insertError); return; }
+    await supabase.from("trade_listings").delete().eq("id", entry.id);
+    setListings((prev) => prev.filter((l) => l.id !== entry.id));
+  }
+
   // ── List for Trade ────────────────────────────────────────
 
   function listForTrade(entry) {
@@ -388,6 +421,12 @@ export default function MyBooksPage() {
             <div className="book-card-actions">
               {activeTab === "books" && (
                 <button className="btn-edit" onClick={() => editBook(hoveredEntry)}>Edit</button>
+              )}
+              {activeTab === "listings" && (
+                <>
+                  <button className="btn-edit" onClick={() => editListing(hoveredEntry)}>Edit</button>
+                  <button className="btn-unlist" onClick={() => unlistBook(hoveredEntry)}>Unlist</button>
+                </>
               )}
               <button
                 className="btn-remove"

@@ -77,6 +77,24 @@ export default function AddBookPage() {
       });
       if (preCondition) setCondition(preCondition);
       if (preNotes) setSellerNotes(preNotes);
+      return;
+    }
+
+    if (state?.editListing) {
+      const { id, book, condition: preCondition, notes: preNotes } = state.editListing;
+      setSelectedBook({
+        id: book.google_books_id,
+        _supabaseBookId: book.id,
+        _listingId: id,
+        volumeInfo: {
+          title: book.title,
+          authors: book.authors || [],
+          imageLinks: book.thumbnail ? { thumbnail: book.thumbnail } : undefined,
+          categories: book.genre ? [book.genre] : [],
+        },
+      });
+      if (preCondition) setCondition(preCondition);
+      if (preNotes) setSellerNotes(preNotes);
     }
   }, []);
 
@@ -167,6 +185,22 @@ export default function AddBookPage() {
       return;
     }
 
+    // Edit listing mode: update existing trade_listings entry
+    if (selectedBook._listingId) {
+      const { error } = await supabase
+        .from("trade_listings")
+        .update({ condition, notes: sellerNotes || null })
+        .eq("id", selectedBook._listingId);
+      if (error) {
+        setSubmitError("Failed to update listing: " + error.message);
+        setSubmitting(false);
+        return;
+      }
+      setSubmitting(false);
+      setSubmitted(true);
+      return;
+    }
+
     const info = selectedBook.volumeInfo;
 
     // If coming from My Library the book already exists — skip the upsert
@@ -249,15 +283,16 @@ export default function AddBookPage() {
     setSubmitError(null);
   }
 
-  const info          = selectedBook?.volumeInfo;
-  const fromLibrary   = !!selectedBook?._supabaseBookId;
-  const isEditMode    = !!selectedBook?._userBookId;
-  const isListingMode = !isEditMode && (destination === "trade" || fromLibrary);
-  const canSubmit     = !!selectedBook && (!isListingMode || sellerNotes.trim().length > 0);
+  const info               = selectedBook?.volumeInfo;
+  const fromLibrary        = !!selectedBook?._supabaseBookId && !selectedBook?._listingId;
+  const isEditMode         = !!selectedBook?._userBookId;
+  const isEditListingMode  = !!selectedBook?._listingId;
+  const isListingMode      = !isEditMode && !isEditListingMode && (destination === "trade" || fromLibrary);
+  const canSubmit          = !!selectedBook && (!isListingMode || sellerNotes.trim().length > 0);
 
   // ── Success screen ────────────────────────────────────────
   if (submitted) {
-    const destinationMsg = isEditMode
+    const destinationMsg = (isEditMode || isEditListingMode)
       ? "Your changes have been saved."
       : destination === "library" ? "Added to your library." : "Listed for trade.";
 
@@ -265,13 +300,13 @@ export default function AddBookPage() {
       <div className="add-book-page">
         <div className="add-book-success">
           <div className="add-book-success-icon">✓</div>
-          <h2>{isEditMode ? "Book updated!" : "Book added!"}</h2>
+          <h2>{(isEditMode || isEditListingMode) ? "Listing updated!" : "Book added!"}</h2>
           <p>{destinationMsg}</p>
           <div className="add-book-success-actions">
             <button className="abp-btn-primary" onClick={() => navigate("/library")}>
               Go to My Library
             </button>
-            {!isEditMode && (
+            {!isEditMode && !isEditListingMode && (
               <button className="abp-btn-ghost" onClick={resetForm}>
                 Add Another
               </button>
@@ -289,7 +324,7 @@ export default function AddBookPage() {
 
         {/* Header */}
         <div className="add-book-header">
-          <h1 className="add-book-title">{isEditMode ? "Edit Book" : fromLibrary ? "List for Trade" : selectedBook ? "Add Book" : "Search Book"}</h1>
+          <h1 className="add-book-title">{isEditListingMode ? "Edit Listing" : isEditMode ? "Edit Book" : fromLibrary ? "List for Trade" : selectedBook ? "Add Book" : "Search Book"}</h1>
         </div>
 
         {/* Step 1: Search */}
@@ -487,8 +522,8 @@ export default function AddBookPage() {
                 disabled={!canSubmit || submitting}
               >
                 {submitting
-                  ? (isEditMode ? "Saving..." : isListingMode ? "Listing..." : "Adding...")
-                  : (isEditMode ? "Save Changes" : isListingMode ? "Add Listing" : "Add Book")}
+                  ? (isEditMode || isEditListingMode ? "Saving..." : isListingMode ? "Listing..." : "Adding...")
+                  : (isEditMode || isEditListingMode ? "Save Changes" : isListingMode ? "Add Listing" : "Add Book")}
               </button>
             </div>
           </div>
