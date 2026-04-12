@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import "./BookSearchPage.css";
 
 function BookSearch() {
   const [query, setQuery] = useState("");
@@ -52,69 +53,49 @@ function BookSearch() {
   }
 
   return (
-    <div
-      style={{
-        maxWidth: 600,
-        margin: "40px auto",
-        fontFamily: "sans-serif",
-        padding: "0 20px",
-      }}
-    >
+    <div className="book-search-container">
       <h1>Book Exchange</h1>
       <p>Search for a book to add to the database.</p>
 
-      <div style={{ display: "flex", gap: 8 }}>
+      <div className="book-search-input-row">
         <input
           type="text"
           placeholder="Search by title or author..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && searchBooks()}
-          style={{ flex: 1, padding: "8px 12px", fontSize: 16 }}
+          className="book-search-input"
         />
-        <button
-          onClick={searchBooks}
-          style={{ padding: "8px 16px", fontSize: 16 }}
-        >
+        <button onClick={searchBooks} className="book-search-btn">
           Search
         </button>
       </div>
 
       {loading && <p>Searching...</p>}
-      {saved && <p style={{ color: "green" }}>"{saved}" saved to database!</p>}
+      {saved && <p className="book-search-saved">"{saved}" saved to database!</p>}
 
-      <ul style={{ listStyle: "none", padding: 0, marginTop: 16 }}>
+      <ul className="book-search-results">
         {results.map((item) => (
-          <li
-            key={item.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              padding: 12,
-              marginBottom: 8,
-              display: "flex",
-              gap: 12,
-            }}
-          >
+          <li key={item.id} className="book-search-result-item">
             {item.volumeInfo.imageLinks?.thumbnail && (
               <img
                 src={item.volumeInfo.imageLinks.thumbnail}
                 alt="cover"
-                style={{ width: 60, objectFit: "contain" }}
+                className="book-search-result-cover"
               />
             )}
-            <div style={{ flex: 1 }}>
+            <div className="book-search-result-info">
               <strong>{item.volumeInfo.title}</strong>
-              <div style={{ color: "#555", fontSize: 14 }}>
+              <div className="book-search-result-authors">
                 {item.volumeInfo.authors?.join(", ")}
               </div>
-              <div style={{ color: "#888", fontSize: 13 }}>
+              <div className="book-search-result-date">
                 {item.volumeInfo.publishedDate}
               </div>
             </div>
             <button
               onClick={() => saveBook(item)}
-              style={{ alignSelf: "center", padding: "6px 12px" }}
+              className="book-search-add-btn"
             >
               Add
             </button>

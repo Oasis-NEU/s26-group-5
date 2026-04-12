@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import "./Auth.css";
 
 export default function Auth({ onClose }) {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -42,23 +43,23 @@ export default function Auth({ onClose }) {
   }
 
   return (
-    <div style={styles.dropdown}>
-      <div style={styles.header}>
-        <span style={styles.title}>
+    <div className="auth-dropdown">
+      <div className="auth-header">
+        <span className="auth-title">
           {showSignUp ? "Create Account" : "Sign In"}
         </span>
         {onClose && (
-          <button style={styles.closeBtn} onClick={onClose}>
+          <button className="auth-close-btn" onClick={onClose}>
             ✕
           </button>
         )}
       </div>
 
       {message ? (
-        <div style={styles.successBox}>
-          <p style={{ margin: 0, fontSize: 13 }}>{message}</p>
+        <div className="auth-success-box">
+          <p className="auth-success-msg">{message}</p>
           <button
-            style={{ ...styles.primaryBtn, marginTop: 12 }}
+            className="auth-primary-btn auth-back-btn"
             onClick={() => switchMode(false)}
           >
             Back to Sign In
@@ -67,7 +68,7 @@ export default function Auth({ onClose }) {
       ) : (
         <form
           onSubmit={showSignUp ? handleSignUp : handleSignIn}
-          style={styles.form}
+          className="auth-form"
         >
           <input
             type="email"
@@ -75,7 +76,7 @@ export default function Auth({ onClose }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            style={styles.input}
+            className="auth-input"
           />
           <input
             type="password"
@@ -86,18 +87,18 @@ export default function Auth({ onClose }) {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={showSignUp ? 6 : undefined}
-            style={styles.input}
+            className="auth-input"
           />
 
-          {error && <p style={styles.errorText}>{error}</p>}
+          {error && <p className="auth-error-text">{error}</p>}
 
-          <button type="submit" style={styles.primaryBtn} disabled={loading}>
+          <button type="submit" className="auth-primary-btn" disabled={loading}>
             {loading ? "..." : showSignUp ? "Create Account" : "Sign In"}
           </button>
 
           <button
             type="button"
-            style={styles.switchBtn}
+            className="auth-switch-btn"
             onClick={() => switchMode(!showSignUp)}
           >
             {showSignUp
@@ -109,78 +110,3 @@ export default function Auth({ onClose }) {
     </div>
   );
 }
-
-const styles = {
-  dropdown: {
-    position: "absolute",
-    top: "calc(100% + 8px)",
-    right: 0,
-    width: 300,
-    background: "#fff",
-    border: "1px solid #e5e7eb",
-    borderRadius: 10,
-    boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-    padding: 20,
-    zIndex: 200,
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  title: {
-    fontWeight: 700,
-    fontSize: 15,
-  },
-  closeBtn: {
-    background: "none",
-    border: "none",
-    fontSize: 16,
-    cursor: "pointer",
-    color: "#9ca3af",
-    padding: "0 2px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 10,
-  },
-  input: {
-    padding: "9px 12px",
-    fontSize: 14,
-    border: "1px solid #d1d5db",
-    borderRadius: 6,
-    outline: "none",
-  },
-  primaryBtn: {
-    padding: "9px 0",
-    fontSize: 14,
-    fontWeight: 600,
-    background: "#4f46e5",
-    color: "#fff",
-    border: "none",
-    borderRadius: 6,
-    cursor: "pointer",
-  },
-  switchBtn: {
-    background: "none",
-    border: "none",
-    fontSize: 12,
-    color: "#6b7280",
-    cursor: "pointer",
-    textAlign: "center",
-    padding: 0,
-  },
-  errorText: {
-    color: "#dc2626",
-    margin: 0,
-    fontSize: 13,
-  },
-  successBox: {
-    background: "#f0fdf4",
-    border: "1px solid #86efac",
-    borderRadius: 8,
-    padding: 12,
-  },
-};

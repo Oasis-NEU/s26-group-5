@@ -1,0 +1,35 @@
+@import "./CarouselBtn.css";
+
+.book-carousel-section {
+  margin-bottom: 6vh;
+  scroll-margin-top: 32vh;
+}
+
+.book-carousel-header {
+  margin-bottom: 2vh;
+}
+
+.book-carousel-title {
+  margin: 0 0 0.6vh;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.book-carousel-description {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.book-carousel {
+  position: relative;
+}
+
+.book-carousel-track {
+  gap: 1vw;
+}
+
+.book-carousel-track > * {
+  flex: 0 0 calc((100% - 5 * 1vw) / 6);
+}

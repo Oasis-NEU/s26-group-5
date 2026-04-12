@@ -1,24 +1,21 @@
-/* Layout for public pages (home, cart, etc...). Majority of the pages on our 
+/* Layout for public pages (home, cart, etc...). Majority of the pages on our
 website will use this layout and it includes the navbar and footer */
 
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import "./PublicLayout.css";
 
 function PublicLayout() {
   return (
-    <div style={styles.pageShell}>
+    <div className="public-layout-shell">
       <Navbar />
       <main>
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }
-
-const styles = {
-  pageShell: {
-    width: "100%",
-  },
-};
 
 export default PublicLayout;
