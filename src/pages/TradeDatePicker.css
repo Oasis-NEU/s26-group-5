@@ -1,0 +1,112 @@
+/* ── BookX DatePicker theme ── */
+
+.trade-datepicker-popper {
+  z-index: 999;
+}
+
+.trade-datepicker-popper .react-datepicker {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+/* Header */
+.trade-datepicker-popper .react-datepicker__header {
+  background-color: #c0392b;
+  border-bottom: none;
+  padding: 12px 0 8px;
+}
+
+.trade-datepicker-popper .react-datepicker__current-month,
+.trade-datepicker-popper .react-datepicker-time__header,
+.trade-datepicker-popper .react-datepicker__day-name {
+  color: #fff;
+  font-weight: 600;
+}
+
+.trade-datepicker-popper .react-datepicker__day-name {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* Nav arrows */
+.trade-datepicker-popper .react-datepicker__navigation-icon::before {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.trade-datepicker-popper .react-datepicker__navigation:hover .react-datepicker__navigation-icon::before {
+  border-color: #fff;
+}
+
+/* Days */
+.trade-datepicker-popper .react-datepicker__day {
+  color: #111827;
+  border-radius: 6px;
+  font-size: 13px;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.trade-datepicker-popper .react-datepicker__day:hover {
+  background-color: #fde8e6;
+  color: #c0392b;
+}
+
+.trade-datepicker-popper .react-datepicker__day--selected,
+.trade-datepicker-popper .react-datepicker__day--keyboard-selected {
+  background-color: #c0392b;
+  color: #fff;
+  font-weight: 600;
+}
+
+.trade-datepicker-popper .react-datepicker__day--selected:hover {
+  background-color: #a93226;
+  color: #fff;
+}
+
+.trade-datepicker-popper .react-datepicker__day--today {
+  font-weight: 700;
+  color: #c0392b;
+}
+
+.trade-datepicker-popper .react-datepicker__day--today.react-datepicker__day--selected {
+  color: #fff;
+}
+
+.trade-datepicker-popper .react-datepicker__day--disabled {
+  color: #d1d5db;
+}
+
+/* Time panel */
+.trade-datepicker-popper .react-datepicker__time-container {
+  border-left: 1px solid #f3f4f6;
+}
+
+.trade-datepicker-popper .react-datepicker__time-container .react-datepicker__time {
+  border-radius: 0 0 12px 0;
+}
+
+.trade-datepicker-popper .react-datepicker__time-list-item {
+  font-size: 13px;
+  color: #374151;
+  border-radius: 4px;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.trade-datepicker-popper .react-datepicker__time-list-item:hover {
+  background-color: #fde8e6 !important;
+  color: #c0392b;
+}
+
+.trade-datepicker-popper .react-datepicker__time-list-item--selected {
+  background-color: #c0392b !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+/* Arrow/triangle */
+.trade-datepicker-popper .react-datepicker__triangle {
+  display: none;
+}

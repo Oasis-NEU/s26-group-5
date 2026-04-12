@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import './TradePage.css'
+import './TradeDatePicker.css'
 import topArrow from '../assets/top_arrow.png'
 import bottomArrow from '../assets/bottom_arrow.png'
 import removeIcon from '../assets/remove.png'
@@ -247,6 +250,8 @@ export default function TradePage() {
     const [flyingBooks, setFlyingBooks]     = useState([])
     const [receivedByMe, setReceivedByMe]   = useState([])
     const [receivedByThem, setReceivedByThem] = useState([])
+    const [meetupLocation, setMeetupLocation] = useState('')
+    const [meetupDateTime, setMeetupDateTime] = useState(null)
 
     // Refs for position tracking
     const myShelfRef    = useRef(null)
@@ -344,6 +349,7 @@ export default function TradePage() {
         const capturedTheirOffer = [...theirOffer]
         const total = capturedMyOffer.length + capturedTheirOffer.length
         if (total === 0) return
+        if (!meetupLocation.trim() || !meetupDateTime) return
 
         // Get slot rects before hiding
         const mySlots    = myShelfRef.current    ? Array.from(myShelfRef.current.querySelectorAll('.book-slot'))    : []
@@ -393,6 +399,8 @@ export default function TradePage() {
                         old_user:    session.user.id,
                         new_user:    theirUserId,
                         book_id:     e.book.id,
+                        location:    meetupLocation.trim(),
+                        date_time:   meetupDateTime.toISOString(),
                     })),
                     ...capturedTheirOffer.map(e => ({
                         trade_id:    tradeId,
@@ -400,6 +408,8 @@ export default function TradePage() {
                         old_user:    theirUserId,
                         new_user:    session.user.id,
                         book_id:     e.book.id,
+                        location:    meetupLocation.trim(),
+                        date_time:   meetupDateTime.toISOString(),
                     })),
                 ]
                 supabase
@@ -486,11 +496,35 @@ export default function TradePage() {
                         />
                     </div>
 
+                    <div className="trade-meetup-fields">
+                        <input
+                            className="trade-meetup-input"
+                            type="text"
+                            placeholder="Meetup location"
+                            value={meetupLocation}
+                            onChange={e => setMeetupLocation(e.target.value)}
+                            disabled={flying}
+                        />
+                        <DatePicker
+                            selected={meetupDateTime}
+                            onChange={date => setMeetupDateTime(date)}
+                            showTimeSelect
+                            timeFormat="h:mm aa"
+                            timeIntervals={15}
+                            dateFormat="MMM d, yyyy  h:mm aa"
+                            placeholderText="Select date & time"
+                            minDate={new Date()}
+                            className="trade-meetup-input"
+                            popperClassName="trade-datepicker-popper"
+                            disabled={flying}
+                        />
+                    </div>
+
                     <div className="button">
                         <button
                             className="confirm"
                             onClick={handlePropose}
-                            disabled={flying}
+                            disabled={flying || !meetupLocation.trim() || !meetupDateTime}
                         >
                             propose trade
                         </button>
