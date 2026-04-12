@@ -39,7 +39,7 @@ function BookShelf({ books, onAdd, onRemove, label }) {
                     </div>
                 ))}
                 {books.length === 0 && (
-                    <span className="empty-hint">no books added</span>
+                    <span className="empty-hint">NO BOOKS ADDED</span>
                 )}
             </div>
             {adding ? (
@@ -69,10 +69,7 @@ export default function TradePage() {
 
     return (
         <div className="trade-page">
-            <div className="trade-header">
-                <span className="trade-title">book trade</span>
-            </div>
-
+            
             <div className="container">
                 <BookShelf
                     books={myBooks}
