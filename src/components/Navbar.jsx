@@ -5,7 +5,7 @@ import { searchBooks } from "../api/googleBooks";
 import { supabase } from "../lib/supabaseClient";
 import "./Navbar.css";
 
-const GENRES = ["Mystery", "Romance", "Historical Fiction", "Horror", "Sci-Fi", "Textbooks"];
+const GENRES = ["Mystery", "Romance", "Fiction", "Horror", "Sci-Fi", "Textbooks"];
 const MORE_GENRES = ["Nonfiction", "Children's Books", "Comics & Graphic Novels", "Self-Help", "Biography", "Poetry", "Art & Photography", "Travel", "Cookbooks"];
 
 export default function Navbar() {
