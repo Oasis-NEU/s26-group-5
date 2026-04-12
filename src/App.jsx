@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import PublicLayout from "./layouts/PublicLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import HomePage from "./pages/HomePage";
@@ -7,6 +7,13 @@ import TradePage from "./pages/TradePage";
 import MyBooksPage from "./pages/MyBooksPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import AddBookPage from "./pages/AddBookPage";
+
+// Forces AddBookPage to fully remount on every navigation to /add-book,
+// giving a clean form state without effects fighting against the router.
+function KeyedAddBook() {
+  const { key } = useLocation();
+  return <AddBookPage key={key} />;
+}
 
 function PlaceholderPage({ title }) {
   return (
@@ -30,7 +37,7 @@ function App() {
           <Route path="/trade" element={<TradePage />} />
           <Route path="/library" element={<MyBooksPage />} />
           <Route path="/search" element={<SearchResultsPage />} />
-          <Route path="/add-book" element={<AddBookPage />} />
+          <Route path="/add-book" element={<KeyedAddBook />} />
         </Route>
 
         {/*Non navbar pages*/}
