@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import BookCarousel from "../components/BookCarousel";
 import UserCarousel from "../components/UserCarousel";
 import HeroPoster from "../components/HeroPoster";
 import Banner from "../components/Banner";
-import { SAMPLE_USERS } from "../data/users";
 import { supabase } from "../lib/supabaseClient";
 import "./HomePage.css";
 
@@ -59,6 +58,8 @@ function toListing(listing, usernameById) {
     pageCount:    book.page_count,
     publishedDate: book.published_date,
     seller:       usernameById[listing.user_id] ?? "Unknown",
+    sellerId:     listing.user_id,
+    description:  book.description ?? null,
     notes:        listing.notes ?? null,
   };
 }
@@ -66,6 +67,22 @@ function toListing(listing, usernameById) {
 export default function HomePage() {
   const location = useLocation();
   const [listings, setListings] = useState([]);
+
+  const users = useMemo(() => {
+    const map = {};
+    for (const listing of listings) {
+      const key = listing.sellerId;
+      if (!key) continue;
+      if (!map[key]) {
+        map[key] = { id: key, name: listing.seller, thumbnails: [], listingCount: 0 };
+      }
+      map[key].listingCount++;
+      if (map[key].thumbnails.length < 4 && listing.thumbnail) {
+        map[key].thumbnails.push(listing.thumbnail.replace("http://", "https://"));
+      }
+    }
+    return Object.values(map);
+  }, [listings]);
 
   useEffect(() => {
     if (location.hash) {
@@ -96,7 +113,7 @@ export default function HomePage() {
         await Promise.all([
           supabase
             .from("books")
-            .select("id, google_books_id, title, authors, thumbnail, genre, page_count, published_date")
+            .select("id, google_books_id, title, authors, thumbnail, genre, page_count, published_date, description")
             .in("id", bookIds),
           supabase
             .from("users")
@@ -135,7 +152,7 @@ export default function HomePage() {
         />
       ))}
 
-      <UserCarousel users={SAMPLE_USERS} />
+      <UserCarousel users={users} />
 
       {CATEGORIES_MID.map((cat) => (
         <BookCarousel

@@ -1,22 +1,71 @@
 import "./UserCarousel.css";
 
-export default function UserCard({ name, collageColors }) {
+function nameToHue(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h % 360;
+}
+
+const FAN = {
+  0: [],
+  1: [{ r: 0,   x: 0  }],
+  2: [{ r: -10, x: -26 }, { r: 10,  x: 26  }],
+  3: [{ r: -15, x: -34 }, { r: 0,   x: 0   }, { r: 15,  x: 34  }],
+  4: [{ r: -18, x: -42 }, { r: -6,  x: -14 }, { r: 6,   x: 14  }, { r: 18,  x: 42  }],
+};
+
+export default function UserCard({ name, thumbnails = [], listingCount = 0 }) {
+  const count = Math.min(thumbnails.length, 4);
+  const positions = FAN[count];
+  const hue = nameToHue(name || "user");
+  const fanBg = `linear-gradient(150deg, hsl(${hue},50%,88%) 0%, hsl(${(hue + 30) % 360},45%,82%) 100%)`;
+
   return (
     <div className="user-card">
-      <div className="user-card-collage">
-        {collageColors.map((color, i) => (
-          <div key={i} className="user-card-collage-cell" style={{ backgroundColor: color }} />
-        ))}
+      <div className="user-card-fan" style={{ background: fanBg }}>
+        {count === 0 ? (
+          <div className="user-card-fan-empty" />
+        ) : (
+          <>
+            {thumbnails.slice(0, 4).map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt=""
+                className="user-card-fan-book"
+                style={{
+                  transform: `rotate(${positions[i].r}deg) translateX(${positions[i].x}px)`,
+                  zIndex: i + 1,
+                }}
+              />
+            ))}
+            {listingCount > count && (
+              <div
+                className="user-card-fan-more"
+                style={{
+                  transform: `rotate(${positions[count - 1].r}deg) translateX(${positions[count - 1].x}px)`,
+                  zIndex: count + 1,
+                }}
+              >
+                +{listingCount - count}
+              </div>
+            )}
+          </>
+        )}
       </div>
       <div className="user-card-info">
-        <div className="user-card-pfp">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-          </svg>
+        <div
+          className="user-card-pfp"
+          style={{
+            backgroundColor: `hsl(${hue},50%,88%)`,
+            borderColor:     `hsl(${hue},40%,80%)`,
+            color:           `hsl(${hue},45%,32%)`,
+          }}
+        >
+          <span className="user-card-pfp-initial">{name?.[0]?.toUpperCase() ?? "?"}</span>
         </div>
         <p className="user-card-name">{name}</p>
-        <p className="user-card-listings">Placeholder listings</p>
+        <p className="user-card-listings">{listingCount} listing{listingCount !== 1 ? "s" : ""}</p>
       </div>
     </div>
   );

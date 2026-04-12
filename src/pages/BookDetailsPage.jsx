@@ -64,6 +64,13 @@ export default function BookDetailsPage() {
           <p className="book-details-author">by {book.author}</p>
           <p className="book-details-listed-by">Listed by <span>{book.seller}</span></p>
 
+          {book.description && (
+            <div className="book-details-section">
+              <h3 className="book-details-section-title">About this Book</h3>
+              <p className="book-details-description">{book.description}</p>
+            </div>
+          )}
+
           <div className="book-details-meta-grid">
             <div className="book-details-meta-item">
               <span className="detail-label">Published</span>
@@ -82,13 +89,6 @@ export default function BookDetailsPage() {
               <span className="detail-value">{book.condition}</span>
             </div>
           </div>
-
-          {book.description && (
-            <div className="book-details-section">
-              <h3 className="book-details-section-title">About this Book</h3>
-              <p className="book-details-description">{book.description}</p>
-            </div>
-          )}
 
           {book.notes && (
             <div className="book-details-section">
