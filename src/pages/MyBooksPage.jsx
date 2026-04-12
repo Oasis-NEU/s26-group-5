@@ -137,7 +137,7 @@ export default function MyBooksPage() {
     setLoadingListings(true);
     const { data, error } = await supabase
       .from("listings")
-      .select("id, condition, seller_notes, status, created_at, book:books(id, title, authors, thumbnail, genre)")
+      .select("id, condition, notes, status, created_at, book:books(id, title, authors, thumbnail, genre)")
       .eq("user_id", session.user.id)
       .order("created_at", { ascending: false });
     if (!error) setListings(data || []);
