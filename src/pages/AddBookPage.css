@@ -1,0 +1,543 @@
+.add-book-page {
+  min-height: calc(100vh - 80px);
+  background: #f9fafb;
+  padding: 6vh 11vw 8vh;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+/* ── Inner container ── */
+.add-book-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.add-book-header {
+  margin-bottom: 3.5vh;
+}
+
+.add-book-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1.2vh;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+.add-book-back:hover {
+  color: #111827;
+}
+
+.add-book-title {
+  margin: 0 0 0.5vh;
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.add-book-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ── Search section ── */
+.add-book-section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.add-book-search-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.add-book-search-input {
+  flex: 1;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  background: #fff;
+  color: #111827;
+  transition: border-color 0.15s;
+}
+.add-book-search-input:focus {
+  border-color: #3b2a1a;
+}
+
+/* ── Results list ── */
+.add-book-results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-book-result-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.add-book-result-item:hover {
+  border-color: #a07850;
+  background: #faf7f3;
+}
+.add-book-result-item:hover .add-book-result-cta {
+  opacity: 1;
+}
+
+.add-book-result-thumb {
+  width: 44px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 3px;
+  flex-shrink: 0;
+  background: #f3f4f6;
+}
+.add-book-result-thumb--empty {
+  background: #e5e7eb;
+}
+
+.add-book-result-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-book-result-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.add-book-result-author {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.add-book-result-year {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.add-book-result-cta {
+  font-size: 12px;
+  color: #a07850;
+  font-weight: 600;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+/* ── Two-column form layout ── */
+.add-book-form-layout {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 3vw;
+  align-items: start;
+}
+
+/* ── Preview aside ── */
+.add-book-preview {
+  position: sticky;
+  top: 2vh;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.add-book-preview-cover {
+  width: 100%;
+}
+
+.add-book-preview-cover img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #f5f0e8;
+}
+
+.add-book-preview-no-cover {
+  width: 100%;
+  height: 170px;
+  background: #f5f0e8;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #b8a07a;
+  font-style: italic;
+}
+
+.add-book-preview-meta {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.add-book-preview-book-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.add-book-preview-author {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.add-book-preview-detail {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.add-book-change-btn {
+  width: 100%;
+  padding: 7px 0;
+  font-size: 12px;
+  font-weight: 600;
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s, color 0.15s;
+}
+.add-book-change-btn:hover {
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+/* ── Form right column ── */
+.add-book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+}
+
+.add-book-field {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+
+.add-book-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.add-book-optional {
+  font-weight: 400;
+  color: #9ca3af;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 10px;
+}
+
+/* ── Condition ── */
+.abp-condition-btns {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.abp-condition-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #d9ccbf;
+  background: #f3ede4;
+  color: #4a3020;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.abp-condition-btn:hover {
+  background: #e8ddd0;
+}
+.abp-condition-btn.active {
+  background: #3b2a1a;
+  color: #f9f3ea;
+  border-color: transparent;
+}
+
+.abp-condition-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* ── Seller notes textarea ── */
+.add-book-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  color: #111827;
+  resize: vertical;
+  background: #fff;
+  box-sizing: border-box;
+  line-height: 1.55;
+  transition: border-color 0.15s;
+}
+.add-book-textarea:focus {
+  border-color: #3b2a1a;
+}
+
+/* ── Photos ── */
+.add-book-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.add-book-photo-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+.add-book-photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.add-book-photo-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s;
+}
+.add-book-photo-remove:hover {
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.add-book-photo-add {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  border: 2px dashed #d1d5db;
+  background: #f9fafb;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 11px;
+  color: #6b7280;
+  font-family: inherit;
+  transition: border-color 0.15s, color 0.15s;
+}
+.add-book-photo-add-icon {
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1;
+  color: #9ca3af;
+  transition: color 0.15s;
+}
+.add-book-photo-add:hover {
+  border-color: #a07850;
+  color: #a07850;
+}
+.add-book-photo-add:hover .add-book-photo-add-icon {
+  color: #a07850;
+}
+
+/* ── Where to add checkboxes ── */
+.add-book-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-book-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.add-book-checkbox-row.checked {
+  border-color: #3b2a1a;
+  background: #faf7f3;
+}
+.add-book-checkbox-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: #3b2a1a;
+  cursor: pointer;
+}
+.add-book-checkbox-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.add-book-checkbox-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+.add-book-checkbox-desc {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+.add-book-checkbox-error {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #dc2626;
+}
+
+/* ── Buttons ── */
+.abp-btn-primary {
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #3b2a1a;
+  color: #f9f3ea;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.abp-btn-primary:hover {
+  background: #5a3e28;
+}
+.abp-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.abp-btn-ghost {
+  padding: 10px 22px;
+  font-size: 14px;
+  background: transparent;
+  color: #6b4f2e;
+  border: 1px solid #c8b49a;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.abp-btn-ghost:hover {
+  background: #e0d4c4;
+}
+
+.add-book-submit {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  border-radius: 10px;
+}
+
+/* ── Success screen ── */
+.add-book-success {
+  max-width: 420px;
+  margin: 10vh auto;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 52px 40px;
+}
+
+.add-book-success-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.add-book-success h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.add-book-success p {
+  margin: 0 0 30px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.add-book-success-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
