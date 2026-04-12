@@ -98,7 +98,8 @@ export default function HomePage() {
 
       let query = supabase
         .from("trade_listings")
-        .select("id, condition, notes, book_id, user_id");
+        .select("id, condition, notes, book_id, user_id")
+        .eq("status", "active");
       if (currentUserId) query = query.neq("user_id", currentUserId);
 
       const { data: tradeRows, error: tradeError } = await query;

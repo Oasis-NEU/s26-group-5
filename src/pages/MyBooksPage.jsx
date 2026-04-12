@@ -70,6 +70,9 @@ export default function MyBooksPage() {
   const [listings, setListings]               = useState([]);
   const [loadingListings, setLoadingListings] = useState(false);
 
+  // Incoming pending trades (books I may receive)
+  const [incomingTrades, setIncomingTrades] = useState([]);
+
 
 
   // Hover popup
@@ -112,6 +115,7 @@ export default function MyBooksPage() {
     if (session) {
       fetchBooks();
       fetchListings();
+      fetchIncomingTrades();
     }
   }, [session]);
 
@@ -138,6 +142,22 @@ export default function MyBooksPage() {
     if (error) console.error("fetchListings error:", error);
     else setListings(data || []);
     setLoadingListings(false);
+  }
+
+  async function fetchIncomingTrades() {
+    const { data, error } = await supabase
+      .from("pending_trades")
+      .select("id, old_user, book:books(id, title, authors, thumbnail, genre)")
+      .eq("new_user", session.user.id);
+    if (error) { console.error("fetchIncomingTrades error:", error); return; }
+    setIncomingTrades(
+      (data || []).map((t) => ({
+        id:         `incoming-${t.id}`,
+        book:       t.book,
+        status:     "pending",
+        isIncoming: true,
+      }))
+    );
   }
 
   // ── Edit book ─────────────────────────────────────────────
@@ -202,6 +222,14 @@ export default function MyBooksPage() {
   for (let i = 0; i < books.length; i += BOOKS_PER_SHELF)
     shelves.push(books.slice(i, i + BOOKS_PER_SHELF));
   while (shelves.length < MIN_SHELVES) shelves.push([]);
+  // Append incoming pending trades to the last shelf of My Books
+  if (incomingTrades.length > 0) {
+    const last = shelves[shelves.length - 1];
+    const combined = [...last, ...incomingTrades];
+    shelves[shelves.length - 1] = combined.slice(0, BOOKS_PER_SHELF);
+    for (let i = BOOKS_PER_SHELF; i < combined.length; i += BOOKS_PER_SHELF)
+      shelves.push(combined.slice(i, i + BOOKS_PER_SHELF));
+  }
 
   const listingShelves = [];
   for (let i = 0; i < listings.length; i += BOOKS_PER_SHELF)
@@ -369,7 +397,7 @@ export default function MyBooksPage() {
           <div className="book-card-title">{hoveredEntry.book.title}</div>
           <div className="book-card-author">{hoveredEntry.book.authors?.join(", ")}</div>
 
-          {activeTab === "books" && hoveredEntry.book.published_date && (
+          {activeTab === "books" && !hoveredEntry.isIncoming && hoveredEntry.book.published_date && (
             <div className="book-card-year">{hoveredEntry.book.published_date.slice(0, 4)}</div>
           )}
 
@@ -379,7 +407,13 @@ export default function MyBooksPage() {
             </div>
           )}
 
-          {activeTab === "books" && (
+          {activeTab === "books" && hoveredEntry.isIncoming && (
+            <div className="book-card-year" style={{ color: STATUS_COLORS["pending"] }}>
+              ● pending — incoming trade
+            </div>
+          )}
+
+          {activeTab === "books" && !hoveredEntry.isIncoming && (
             isAlreadyListed ? (
               <div className="book-card-listed-badge">Already listed for trade</div>
             ) : (
@@ -389,17 +423,19 @@ export default function MyBooksPage() {
             )
           )}
 
-          <div className="book-card-actions">
-            {activeTab === "books" && (
-              <button className="btn-edit" onClick={() => editBook(hoveredEntry)}>Edit</button>
-            )}
-            <button
-              className="btn-remove"
-              onClick={() => activeTab === "books" ? removeBook(hoveredEntry.id) : removeListing(hoveredEntry.id)}
-            >
-              Remove
-            </button>
-          </div>
+          {!hoveredEntry.isIncoming && (
+            <div className="book-card-actions">
+              {activeTab === "books" && (
+                <button className="btn-edit" onClick={() => editBook(hoveredEntry)}>Edit</button>
+              )}
+              <button
+                className="btn-remove"
+                onClick={() => activeTab === "books" ? removeBook(hoveredEntry.id) : removeListing(hoveredEntry.id)}
+              >
+                Remove
+              </button>
+            </div>
+          )}
         </div>
       )}
 
