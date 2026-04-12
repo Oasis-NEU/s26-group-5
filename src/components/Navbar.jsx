@@ -4,6 +4,7 @@ import Auth from "./Auth";
 import { searchBooks } from "../api/googleBooks";
 import { supabase } from "../lib/supabaseClient";
 import { useAuthSession } from "../hooks/useAuthSession";
+import bxLogo from "../assets/bx.png";
 import "./Navbar.css";
 
 const GENRES = ["Mystery", "Romance", "Historical Fiction", "Horror", "Sci-Fi", "Textbooks"];
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [showLogin, setShowLogin] = useState(false);
   const { user } = useAuthSession();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [tradeRequestCount, setTradeRequestCount] = useState(0);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef(null);
@@ -24,6 +26,29 @@ export default function Navbar() {
   // Close login modal when user signs in
   useEffect(() => {
     if (user) setShowLogin(false);
+  }, [user]);
+
+  // Trade request badge count
+  useEffect(() => {
+    if (!user) { setTradeRequestCount(0); return; }
+
+    async function fetchCount() {
+      const { data } = await supabase
+        .from("pending_trades")
+        .select("trade_id")
+        .neq("proposer_id", user.id)
+        .or(`old_user.eq.${user.id},new_user.eq.${user.id}`);
+      setTradeRequestCount(new Set(data?.map((r) => r.trade_id)).size);
+    }
+
+    fetchCount();
+
+    const channel = supabase
+      .channel("trade-requests-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "pending_trades" }, fetchCount)
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
   }, [user]);
 
   // Debounced suggestions fetch
@@ -97,7 +122,7 @@ export default function Navbar() {
 
         {/* Logo */}
         <div className="navbar-logo" onClick={() => navigate("/")} role="button" tabIndex={0}>
-          <div className="navbar-logo-icon">Bx</div>
+          <img src={bxLogo} alt="BookX" className="navbar-logo-icon" />
           <span className="navbar-logo-text">BookX</span>
         </div>
 
@@ -167,12 +192,19 @@ export default function Navbar() {
           </button>
 
           {/* Trade Requests */}
-          <button className="navbar-icon-btn" title="Trade Requests" onClick={() => navigate("/trade-requests")}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-          </button>
+          <div className="navbar-notif-wrapper">
+            <button className="navbar-icon-btn" title="Trade Requests" onClick={() => navigate("/trade-requests")}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </button>
+            {tradeRequestCount > 0 && (
+              <span className="navbar-notif-badge">
+                {tradeRequestCount > 99 ? "99+" : tradeRequestCount}
+              </span>
+            )}
+          </div>
 
           {user ? (
             <div className="navbar-user-wrapper" ref={userRef}>

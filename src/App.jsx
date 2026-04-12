@@ -17,19 +17,19 @@ function ScrollToTop() {
 }
 
 const PAGE_TITLES = {
-  "/":               "Oasis — Home",
-  "/browse":         "Oasis — Browse",
-  "/trade":          "Oasis — Trade",
-  "/library":        "Oasis — My Library",
-  "/trade-requests": "Oasis — Trade Requests",
-  "/add-book":       "Oasis — Add Book",
-  "/search":         "Oasis — Search",
+  "/":               "BookX — Home",
+  "/browse":         "BookX — Browse",
+  "/trade":          "BookX — Trade",
+  "/library":        "BookX — My Library",
+  "/trade-requests": "BookX — Trade Requests",
+  "/add-book":       "BookX — Add Book",
+  "/search":         "BookX — Search",
 };
 
 function TitleManager() {
   const { pathname } = useLocation();
   useEffect(() => {
-    document.title = PAGE_TITLES[pathname] ?? "Oasis";
+    document.title = PAGE_TITLES[pathname] ?? "BookX";
   }, [pathname]);
   return null;
 }
