@@ -274,6 +274,12 @@
   font-size: 10px;
 }
 
+.add-book-required {
+  font-weight: 700;
+  color: #dc2626;
+  font-size: 12px;
+}
+
 /* ── Condition ── */
 .abp-condition-btns {
   display: flex;
