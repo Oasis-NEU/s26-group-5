@@ -149,12 +149,12 @@ export default function AddBookPage() {
       }
     } else {
       const { error: listingError } = await supabase
-        .from("listings")
+        .from("trade_listings")
         .insert({
           user_id: session.user.id,
           book_id: bookId,
           condition,
-          seller_notes: sellerNotes || null,
+          notes: sellerNotes || null,
           status: "active",
         });
       if (listingError) {
