@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Auth from "./Auth";
 import { searchBooks } from "../api/googleBooks";
 import { supabase } from "../lib/supabaseClient";
+import { useAuthSession } from "../hooks/useAuthSession";
 import "./Navbar.css";
 
 const GENRES = ["Mystery", "Romance", "Historical Fiction", "Horror", "Sci-Fi", "Textbooks"];
@@ -13,24 +14,17 @@ export default function Navbar() {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [showLogin, setShowLogin] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user } = useAuthSession();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef(null);
   const userRef = useRef(null);
 
-  // Auth state
+  // Close login modal when user signs in
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) setShowLogin(false);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+    if (user) setShowLogin(false);
+  }, [user]);
 
   // Debounced suggestions fetch
   useEffect(() => {

@@ -1,17 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { spineColor, spineDimensions } from "../utils/bookSpine";
+import { secureImageUrl } from "../utils/image";
+import { useAuthSession } from "../hooks/useAuthSession";
 import "./MyBooksPage.css";
 
 const BOOKS_PER_SHELF = 12;
 const MIN_SHELVES = 3;
-
-const SPINE_COLORS = [
-  "#1e3a5f", "#3b1f5e", "#1f5e3b", "#5e3b1f", "#5e1f1f",
-  "#1f4a5e", "#4a2060", "#1a5632", "#7d3c00", "#1b2631",
-  "#283747", "#512e5f", "#145a32", "#6e2f0a", "#4a0e0e",
-  "#0b3d40", "#3d2b0b", "#2b0b3d", "#0b3d1a", "#3d0b2b",
-];
 
 const STATUS_COLORS = {
   active:  "#16a34a",
@@ -19,45 +15,23 @@ const STATUS_COLORS = {
   traded:  "#6b7280",
 };
 
-function hashStr(str = "") {
-  let h = 0;
-  for (let i = 0; i < str.length; i++)
-    h = (str.charCodeAt(i) + ((h << 5) - h)) | 0;
-  return Math.abs(h);
-}
-
-function spineColor(title) {
-  return SPINE_COLORS[hashStr(title) % SPINE_COLORS.length];
-}
-
-function spineDimensions(title) {
-  const h = hashStr(title);
-  const heights = [142, 148, 154, 160, 165, 170, 156, 146];
-  const widths  = [28, 32, 36, 38, 34, 30, 40, 26];
-  return {
-    height: heights[h % heights.length],
-    width:  widths[(h >> 4) % widths.length],
-  };
-}
 
 const POPUP_W = 210;
 const POPUP_H = 360;
-const POPUP_GAP = 14;
 
 function computePopupStyle(rect) {
   if (!rect) return {};
   let left = rect.left + rect.width / 2 - POPUP_W / 2;
   left = Math.max(8, Math.min(left, window.innerWidth - POPUP_W - 8));
-  let top = rect.top - POPUP_H - POPUP_GAP;
-  if (top < 8) top = rect.bottom + POPUP_GAP;
+  let top = rect.top - POPUP_H;
+  if (top < 8) top = rect.bottom;
   return { top, left };
 }
 
 export default function MyBooksPage() {
   const navigate = useNavigate();
 
-  const [session, setSession]         = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
+  const { session, loading: authLoading } = useAuthSession();
 
   // Tabs
   const [activeTab, setActiveTab] = useState("books");
@@ -81,24 +55,10 @@ export default function MyBooksPage() {
   const leaveTimer = useRef(null);
   const hoveredEl  = useRef(null);
 
-  // ── Auth ──────────────────────────────────────────────────
-
+  // ── Clear data on sign-out ────────────────────────────────
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setAuthLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (!session) {
-        setBooks([]);
-        setListings([]);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    if (!session) { setBooks([]); setListings([]); }
+  }, [session]);
 
   // Track hovered spine position on scroll
   useEffect(() => {
@@ -110,6 +70,7 @@ export default function MyBooksPage() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [hoveredEntry]);
+
 
   useEffect(() => {
     if (session) {
@@ -389,7 +350,7 @@ export default function MyBooksPage() {
           onMouseLeave={onPopupLeave}
         >
           {hoveredEntry.book.thumbnail ? (
-            <img src={hoveredEntry.book.thumbnail} alt="cover" />
+            <img src={secureImageUrl(hoveredEntry.book.thumbnail)} alt="cover" />
           ) : (
             <div className="book-card-no-cover">No Cover</div>
           )}

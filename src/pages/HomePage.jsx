@@ -5,6 +5,7 @@ import UserCarousel from "../components/UserCarousel";
 import HeroPoster from "../components/HeroPoster";
 import Banner from "../components/Banner";
 import { supabase } from "../lib/supabaseClient";
+import { secureImageUrl } from "../utils/image";
 import "./HomePage.css";
 
 const GENRE_MAP = {
@@ -78,7 +79,7 @@ export default function HomePage() {
       }
       map[key].listingCount++;
       if (map[key].thumbnails.length < 4 && listing.thumbnail) {
-        map[key].thumbnails.push(listing.thumbnail.replace("http://", "https://"));
+        map[key].thumbnails.push(secureImageUrl(listing.thumbnail));
       }
     }
     return Object.values(map);

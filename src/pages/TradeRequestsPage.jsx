@@ -1,29 +1,15 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { spineColor } from '../utils/bookSpine'
+import { secureImageUrl } from '../utils/image'
+import { useAuthSession } from '../hooks/useAuthSession'
 import './TradeRequestsPage.css'
-
-const SPINE_COLORS = [
-  "#1e3a5f", "#3b1f5e", "#1f5e3b", "#5e3b1f", "#5e1f1f",
-  "#1f4a5e", "#4a2060", "#1a5632", "#7d3c00", "#1b2631",
-  "#283747", "#512e5f", "#145a32", "#6e2f0a", "#4a0e0e",
-]
-
-function hashStr(str = '') {
-  let h = 0
-  for (let i = 0; i < str.length; i++)
-    h = (str.charCodeAt(i) + ((h << 5) - h)) | 0
-  return Math.abs(h)
-}
-
-function spineColor(title) {
-  return SPINE_COLORS[hashStr(title) % SPINE_COLORS.length]
-}
 
 function BookCover({ book }) {
   if (book?.thumbnail) {
     return (
       <img
-        src={book.thumbnail.replace('http://', 'https://')}
+        src={secureImageUrl(book.thumbnail)}
         alt={book.title}
         className="tr-book-cover"
       />
@@ -40,17 +26,11 @@ function BookCover({ book }) {
 }
 
 export default function TradeRequestsPage() {
-  const [session, setSession]     = useState(null)
+  const { session } = useAuthSession()
   const [trades, setTrades]       = useState([])
   const [loading, setLoading]     = useState(true)
   const [accepting, setAccepting] = useState(null)
   const [declining, setDeclining] = useState(null)
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s))
-    return () => subscription.unsubscribe()
-  }, [])
 
   useEffect(() => {
     if (session) fetchTrades()
