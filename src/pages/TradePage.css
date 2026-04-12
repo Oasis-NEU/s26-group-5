@@ -674,3 +674,34 @@
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     user-select: none;
 }
+
+.trade-meetup-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 12px;
+    margin-bottom: 10px;
+}
+
+.trade-meetup-input {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px;
+    padding: 9px 12px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    color: #111827;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.trade-meetup-input:focus {
+    border-color: #c0392b;
+}
+
+.trade-meetup-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
