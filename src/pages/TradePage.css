@@ -7,9 +7,9 @@
     align-items: center;
     padding: 6rem 1.5rem 3rem;
     gap: 2rem;
-    background-color: #0f0f13;
-    font-family: 'Segoe UI', sans-serif;
-    color: #e8e8f0;
+    background-color: #f7f7f8;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: #111827;
 }
 
 .trade-header {
@@ -20,9 +20,9 @@
 .trade-title {
     font-size: 1.8rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.04em;
     text-transform: lowercase;
-    color: #c9b8ff;
+    color: #111827;
 }
 
 /* ── main row ─────────────────────────────── */
@@ -45,19 +45,20 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-    background: #18181f;
-    border: 1px solid #2e2e40;
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
     border-radius: 16px;
     padding: 1.5rem 1.5rem 1.2rem;
     min-height: 320px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .shelf-label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: lowercase;
-    color: #888;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6b7280;
     align-self: flex-start;
     padding-left: 0.3rem;
 }
@@ -104,7 +105,7 @@
     height: 100%;
     object-fit: cover;
     border-radius: 6px;
-    box-shadow: 4px 4px 18px rgba(0, 0, 0, 0.6);
+    box-shadow: 4px 4px 18px rgba(0, 0, 0, 0.18);
     display: block;
 }
 
@@ -133,27 +134,29 @@
 
 .empty-hint {
     font-size: 0.8rem;
-    color: #444;
-    letter-spacing: 0.08em;
+    color: #9ca3af;
+    letter-spacing: 0.06em;
 }
 
 /* ── add book controls ────────────────────── */
 
 .add-btn {
     background: transparent;
-    border: 1px solid #3a3a55;
-    color: #a89fd8;
+    border: 1.5px solid #d1d5db;
+    color: #374151;
     font-size: 0.78rem;
-    letter-spacing: 0.1em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     padding: 0.42rem 1rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .add-btn:hover {
-    background: #25253a;
-    border-color: #6a5fff;
+    background: #fef2f0;
+    border-color: #c0392b;
+    color: #c0392b;
 }
 
 .add-input-row {
@@ -164,10 +167,10 @@
 
 .add-input {
     flex: 1;
-    background: #0f0f18;
-    border: 1px solid #3a3a55;
+    background: #f9fafb;
+    border: 1.5px solid #d1d5db;
     border-radius: 8px;
-    color: #e8e8f0;
+    color: #111827;
     font-size: 0.78rem;
     padding: 0.42rem 0.8rem;
     outline: none;
@@ -176,27 +179,29 @@
 }
 
 .add-input:focus {
-    border-color: #6a5fff;
+    border-color: #c0392b;
 }
 
 .confirm-add {
-    color: #9dffc0;
-    border-color: #2a5040;
+    color: #15803d;
+    border-color: #bbf7d0;
+    background: transparent;
 }
 
 .confirm-add:hover {
-    background: #1a3028;
-    border-color: #3dff90;
+    background: #f0fdf4;
+    border-color: #4ade80;
 }
 
 .cancel-add {
-    color: #ff9d9d;
-    border-color: #502a2a;
+    color: #dc2626;
+    border-color: #fecaca;
+    background: transparent;
 }
 
 .cancel-add:hover {
-    background: #301818;
-    border-color: #ff5555;
+    background: #fef2f2;
+    border-color: #f87171;
 }
 
 /* ── arrows ───────────────────────────────── */
@@ -213,8 +218,18 @@
 .arrow-top,
 .arrow-bottom {
     height: 30px;
-    opacity: 0.55;
-    filter: invert(1);
+}
+
+/* red tint — "my books" outgoing direction */
+.arrow-top {
+    filter: brightness(0) saturate(100%) invert(23%) sepia(68%) saturate(1400%) hue-rotate(338deg) brightness(91%) contrast(95%);
+    opacity: 0.85;
+}
+
+/* blue tint — "their books" incoming direction */
+.arrow-bottom {
+    filter: brightness(0) saturate(100%) invert(28%) sepia(85%) saturate(1200%) hue-rotate(213deg) brightness(95%) contrast(97%);
+    opacity: 0.85;
 }
 
 @keyframes fly-left-wrap {
@@ -247,22 +262,23 @@
 }
 
 .confirm {
-    background: linear-gradient(135deg, #6a5fff, #a259ff);
+    background: #c0392b;
     border: none;
     border-radius: 12px;
     color: #fff;
     font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     padding: 0.75rem 2.8rem;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(106, 95, 255, 0.35);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 16px rgba(192, 57, 43, 0.28);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .confirm:hover {
+    background: #a93226;
     transform: translateY(-2px);
-    box-shadow: 0 6px 28px rgba(106, 95, 255, 0.55);
+    box-shadow: 0 6px 24px rgba(192, 57, 43, 0.4);
 }
 
 .confirm:active {
