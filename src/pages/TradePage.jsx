@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import './TradePage.css'
 import topArrow from '../assets/top_arrow.png'
 import bottomArrow from '../assets/bottom_arrow.png'
 import removeIcon from '../assets/remove.png'
 import { supabase } from '../lib/supabaseClient'
 
-// ── Spine helpers ────────────────────────────────────────────────────────────
-
-const PLACEHOLDER = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTMI5yf9vYw85Q9Qr4kI3HH-qHdza7Gzp5HQ&s'
+// ── Spine helpers ─────────────────────────────────────────────────────────────
 
 const SPINE_COLORS = [
     "#1e3a5f", "#3b1f5e", "#1f5e3b", "#5e3b1f", "#5e1f1f",
@@ -40,9 +39,22 @@ function spineDimensions(title) {
 const BOOKS_PER_SHELF = 5
 const MIN_SHELVES = 3
 
-// ── Left side bookcase ───────────────────────────────────────────────────────
+const POPUP_W = 200
+const POPUP_H = 340
+const POPUP_GAP = 12
 
-function SideBookcase({ entries, isSelected, onToggle, label, emptyMsg }) {
+function computePopupStyle(rect) {
+    if (!rect) return {}
+    let left = rect.left + rect.width / 2 - POPUP_W / 2
+    left = Math.max(8, Math.min(left, window.innerWidth - POPUP_W - 8))
+    let top = rect.top - POPUP_H - POPUP_GAP
+    if (top < 8) top = rect.bottom + POPUP_GAP
+    return { top, left }
+}
+
+// ── Side bookcase ─────────────────────────────────────────────────────────────
+
+function SideBookcase({ entries, label, emptyMsg, onBookEnter, onBookLeave, onBookClick, isSelected }) {
     const shelves = []
     for (let i = 0; i < entries.length; i += BOOKS_PER_SHELF)
         shelves.push(entries.slice(i, i + BOOKS_PER_SHELF))
@@ -68,8 +80,10 @@ function SideBookcase({ entries, isSelected, onToggle, label, emptyMsg }) {
                                     <div
                                         key={entry.id}
                                         className={`side-book${selected ? ' side-book--selected' : ''}`}
-                                        onClick={() => onToggle(entry)}
-                                        title={`${book.title}${book.authors?.length ? ' — ' + book.authors.join(', ') : ''}`}
+                                        onMouseEnter={(e) => onBookEnter(entry, e)}
+                                        onMouseLeave={onBookLeave}
+                                        onClick={() => onBookClick(entry)}
+                                        title={book.title}
                                     >
                                         <div
                                             className="side-spine"
@@ -90,82 +104,91 @@ function SideBookcase({ entries, isSelected, onToggle, label, emptyMsg }) {
     )
 }
 
-// ── Existing center offer panel — unchanged ──────────────────────────────────
+// ── Center offer shelf ────────────────────────────────────────────────────────
 
-function BookShelf({ books, onAdd, onRemove, label }) {
+function BookShelf({ offer, onRemove, onRemoveAll, label }) {
     const [hovered, setHovered] = useState(null)
-    const [adding, setAdding] = useState(false)
-    const [inputVal, setInputVal] = useState('')
-
-    function handleAdd() {
-        const url = inputVal.trim() || PLACEHOLDER
-        onAdd(url)
-        setInputVal('')
-        setAdding(false)
-    }
 
     return (
         <div className="shelf-wrapper">
-            <h3 className="shelf-label">{label}</h3>
+            <div className="shelf-header">
+                <h3 className="shelf-label">{label}</h3>
+                {offer.length > 0 && (
+                    <button className="shelf-remove-all" onClick={onRemoveAll}>remove all</button>
+                )}
+            </div>
             <div className="shelf">
-                {books.map((src, i) => (
+                {offer.map((entry, i) => (
                     <div
-                        key={i}
+                        key={entry.id}
                         className="book-slot"
-                        style={{ '--i': i, '--total': books.length }}
+                        style={{ '--i': i, '--total': offer.length }}
                         onMouseEnter={() => setHovered(i)}
                         onMouseLeave={() => setHovered(null)}
                         data-hovered={hovered === i ? 'true' : 'false'}
                         data-dimmed={hovered !== null && hovered !== i ? 'true' : 'false'}
                     >
-                        <img src={src} alt={`book-${i}`} className="book-cover" />
-                        <button className="remove-btn" onClick={() => onRemove(i)}>
+                        {entry.book.thumbnail ? (
+                            <img
+                                src={entry.book.thumbnail.replace('http://', 'https://')}
+                                alt={entry.book.title}
+                                className="book-cover"
+                            />
+                        ) : (
+                            <div
+                                className="book-cover trade-cover-placeholder"
+                                style={{ background: spineColor(entry.book.title) }}
+                            >
+                                <span className="trade-cover-title">{entry.book.title}</span>
+                            </div>
+                        )}
+                        <button className="remove-btn" onClick={() => onRemove(entry)}>
                             <img src={removeIcon} alt="remove" />
                         </button>
                     </div>
                 ))}
-                {books.length === 0 && (
-                    <span className="empty-hint">NO BOOKS ADDED</span>
+                {offer.length === 0 && (
+                    <span className="empty-hint">NO BOOKS SELECTED</span>
                 )}
             </div>
-            {adding ? (
-                <div className="add-input-row">
-                    <input
-                        className="add-input"
-                        placeholder="paste image URL..."
-                        value={inputVal}
-                        onChange={e => setInputVal(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handleAdd()}
-                        autoFocus
-                    />
-                    <button className="add-btn confirm-add" onClick={handleAdd}>add</button>
-                    <button className="add-btn cancel-add" onClick={() => setAdding(false)}>cancel</button>
-                </div>
-            ) : (
-                <button className="add-btn" onClick={() => setAdding(true)}>+ add book</button>
-            )}
         </div>
     )
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
+// ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function TradePage() {
-    const [myBooks, setMyBooks]     = useState([])
-    const [theirBooks, setTheirBooks] = useState([])
-    const [confirmed, setConfirmed] = useState(false)
+    const location = useLocation()
+    const {
+        theirUserId,
+        theirName: initTheirName,
+        prefilledGoogleId,
+        prefillAll,
+    } = location.state || {}
 
-    const [session, setSession]       = useState(null)
-    const [myListings, setMyListings] = useState([])
+    const [session, setSession]             = useState(null)
+    const [myListings, setMyListings]       = useState([])
+    const [theirListings, setTheirListings] = useState([])
+    const [theirName]                       = useState(initTheirName || '')
+    const [myOffer, setMyOffer]             = useState([])
+    const [theirOffer, setTheirOffer]       = useState([])
+    const [confirmed, setConfirmed]         = useState(false)
+
+    // Popup
+    const [hoveredEntry, setHoveredEntry] = useState(null)
+    const [popupRect, setPopupRect]       = useState(null)
+    const [popupSide, setPopupSide]       = useState(null)
+    const leaveTimer = useRef(null)
+    const hoveredEl  = useRef(null)
 
     // Auth
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s))
         return () => subscription.unsubscribe()
     }, [])
 
-    // Fetch listings when signed in
+    // My listings
     useEffect(() => {
         if (session) fetchMyListings()
         else setMyListings([])
@@ -173,46 +196,93 @@ export default function TradePage() {
 
     async function fetchMyListings() {
         const { data } = await supabase
-            .from('listings')
-            .select('id, condition, status, book:books(id, title, authors, thumbnail, genre)')
+            .from('trade_listings')
+            .select('id, condition, book:books(id, title, authors, thumbnail, genre)')
             .eq('user_id', session.user.id)
             .order('created_at', { ascending: false })
         if (data) setMyListings(data)
     }
 
-    // Click on a side book → add/remove its thumbnail from myBooks
-    function handleToggleMyListing(entry) {
-        const url = entry.book.thumbnail || PLACEHOLDER
-        if (myBooks.includes(url)) {
-            setMyBooks(prev => {
-                const idx = prev.indexOf(url)
-                return prev.filter((_, i) => i !== idx)
-            })
-        } else {
-            setMyBooks(prev => [...prev, url])
+    // Their listings
+    useEffect(() => {
+        if (theirUserId) fetchTheirListings()
+    }, [theirUserId])
+
+    async function fetchTheirListings() {
+        const { data } = await supabase
+            .from('trade_listings')
+            .select('id, condition, book:books(id, google_books_id, title, authors, thumbnail, genre)')
+            .eq('user_id', theirUserId)
+            .order('created_at', { ascending: false })
+        if (!data) return
+        setTheirListings(data)
+        if (prefillAll) {
+            setTheirOffer(data)
+        } else if (prefilledGoogleId) {
+            const match = data.find(l => l.book?.google_books_id === prefilledGoogleId)
+            if (match) setTheirOffer([match])
         }
     }
+
+    // Keep popup anchored while scrolling
+    useEffect(() => {
+        if (!hoveredEntry) return
+        function onScroll() {
+            if (hoveredEl.current)
+                setPopupRect(hoveredEl.current.getBoundingClientRect())
+        }
+        window.addEventListener('scroll', onScroll, { passive: true })
+        return () => window.removeEventListener('scroll', onScroll)
+    }, [hoveredEntry])
+
+    function toggleOffer(entry, side) {
+        const setter = side === 'mine' ? setMyOffer : setTheirOffer
+        setter(prev =>
+            prev.find(e => e.id === entry.id)
+                ? prev.filter(e => e.id !== entry.id)
+                : [...prev, entry]
+        )
+    }
+
+    function onBookEnter(entry, side, e) {
+        clearTimeout(leaveTimer.current)
+        hoveredEl.current = e.currentTarget
+        setHoveredEntry(entry)
+        setPopupSide(side)
+        setPopupRect(e.currentTarget.getBoundingClientRect())
+    }
+
+    function onBookLeave() {
+        leaveTimer.current = setTimeout(() => setHoveredEntry(null), 120)
+    }
+
+    function onPopupEnter() { clearTimeout(leaveTimer.current) }
+    function onPopupLeave() {
+        leaveTimer.current = setTimeout(() => setHoveredEntry(null), 120)
+    }
+
+    const popupStyle = computePopupStyle(popupRect)
 
     return (
         <div className="trade-page">
             <div className="trade-main-row">
 
-                {/* ── Left bookcase: our listed books ── */}
                 <SideBookcase
                     entries={myListings}
-                    isSelected={entry => myBooks.includes(entry.book.thumbnail || PLACEHOLDER)}
-                    onToggle={handleToggleMyListing}
+                    isSelected={entry => myOffer.some(e => e.id === entry.id)}
+                    onBookEnter={(entry, e) => onBookEnter(entry, 'mine', e)}
+                    onBookLeave={onBookLeave}
+                    onBookClick={entry => toggleOffer(entry, 'mine')}
                     label="my listings"
                     emptyMsg={session ? 'No listings yet' : 'Sign in to see your books'}
                 />
 
-                {/* ── Existing center trade UI — untouched ── */}
                 <div className="trade-center">
                     <div className="container">
                         <BookShelf
-                            books={myBooks}
-                            onAdd={url => setMyBooks(prev => [...prev, url])}
-                            onRemove={i => setMyBooks(prev => prev.filter((_, idx) => idx !== i))}
+                            offer={myOffer}
+                            onRemove={entry => setMyOffer(prev => prev.filter(e => e.id !== entry.id))}
+                            onRemoveAll={() => setMyOffer([])}
                             label="my books"
                         />
 
@@ -222,40 +292,64 @@ export default function TradePage() {
                         </div>
 
                         <BookShelf
-                            books={theirBooks}
-                            onAdd={url => setTheirBooks(prev => [...prev, url])}
-                            onRemove={i => setTheirBooks(prev => prev.filter((_, idx) => idx !== i))}
-                            label="their books"
+                            offer={theirOffer}
+                            onRemove={entry => setTheirOffer(prev => prev.filter(e => e.id !== entry.id))}
+                            onRemoveAll={() => setTheirOffer([])}
+                            label={theirName ? `${theirName}'s books` : 'their books'}
                         />
                     </div>
 
                     <div className="button">
                         <button className="confirm" onClick={() => setConfirmed(true)}>
-                            confirm trade
+                            propose trade
                         </button>
                     </div>
                 </div>
 
-                {/* ── Right bookcase: placeholder for trade partner ── */}
-                <div className="side-panel side-panel--empty">
-                    <h3 className="side-panel-label">their listings</h3>
-                    <div className="side-bookcase">
-                        <div className="side-crown" />
-                        {Array.from({ length: MIN_SHELVES }).map((_, i) => (
-                            <div className="side-row" key={i}>
-                                <div className="side-interior">
-                                    {i === 0 && (
-                                        <p className="side-empty-msg">Select a trade partner</p>
-                                    )}
-                                </div>
-                                <div className="side-plank" />
-                            </div>
-                        ))}
-                        <div className="side-base" />
-                    </div>
-                </div>
+                <SideBookcase
+                    entries={theirListings}
+                    isSelected={entry => theirOffer.some(e => e.id === entry.id)}
+                    onBookEnter={(entry, e) => onBookEnter(entry, 'theirs', e)}
+                    onBookLeave={onBookLeave}
+                    onBookClick={entry => toggleOffer(entry, 'theirs')}
+                    label={theirName ? `${theirName}'s listings` : 'their listings'}
+                    emptyMsg={theirUserId ? 'No listings found' : 'Select a trade partner'}
+                />
 
             </div>
+
+            {hoveredEntry && (
+                <div
+                    className="trade-popup"
+                    style={popupStyle}
+                    onMouseEnter={onPopupEnter}
+                    onMouseLeave={onPopupLeave}
+                >
+                    {hoveredEntry.book.thumbnail ? (
+                        <img
+                            src={hoveredEntry.book.thumbnail.replace('http://', 'https://')}
+                            alt="cover"
+                            className="trade-popup-cover"
+                        />
+                    ) : (
+                        <div className="trade-popup-no-cover">No Cover</div>
+                    )}
+                    <div className="trade-popup-title">{hoveredEntry.book.title}</div>
+                    <div className="trade-popup-author">{hoveredEntry.book.authors?.join(', ')}</div>
+                    {(() => {
+                        const offer = popupSide === 'mine' ? myOffer : theirOffer
+                        const isIn = offer.some(e => e.id === hoveredEntry.id)
+                        return (
+                            <button
+                                className={`trade-popup-btn${isIn ? ' trade-popup-btn--remove' : ''}`}
+                                onClick={() => toggleOffer(hoveredEntry, popupSide)}
+                            >
+                                {isIn ? 'Remove from offer' : 'Add to offer'}
+                            </button>
+                        )
+                    })()}
+                </div>
+            )}
         </div>
     )
 }

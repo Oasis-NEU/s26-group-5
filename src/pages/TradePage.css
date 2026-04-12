@@ -240,14 +240,38 @@
         0 8px 24px rgba(0, 0, 0, 0.07);
 }
 
+.shelf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-left: 0.3rem;
+}
+
 .shelf-label {
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: #9ca3af;
-    align-self: flex-start;
-    padding-left: 0.3rem;
+    margin: 0;
+}
+
+.shelf-remove-all {
+    background: none;
+    border: none;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #c4bdb5;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    padding: 0;
+    transition: color 0.15s;
+    font-family: inherit;
+}
+
+.shelf-remove-all:hover {
+    color: #c0392b;
 }
 
 /* ── book stack ───────────────────────────── */
@@ -266,8 +290,8 @@
     position: absolute;
     width: 110px;
     height: 160px;
-    transform: translateX(calc((var(--i) - (var(--total) - 1) / 2) * 28px))
-               rotate(calc((var(--i) - (var(--total) - 1) / 2) * 4deg));
+    transform: translateX(calc((var(--i) - (var(--total) - 1) / 2) * 46px))
+               rotate(calc((var(--i) - (var(--total) - 1) / 2) * 6deg));
     z-index: calc(var(--i) + 1);
     transition:
         transform 0.3s ease,
@@ -276,7 +300,7 @@
 }
 
 .book-slot[data-hovered='true'] {
-    transform: translateX(calc((var(--i) - (var(--total) - 1) / 2) * 28px))
+    transform: translateX(calc((var(--i) - (var(--total) - 1) / 2) * 46px))
                rotate(0deg)
                scale(1.18)
                translateY(-12px);
@@ -474,4 +498,115 @@
 
 .confirm:active {
     transform: translateY(0);
+}
+
+/* ── trade popup ───────────────────────────── */
+
+.trade-popup {
+    position: fixed;
+    z-index: 300;
+    width: 200px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+.trade-popup-cover {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.trade-popup-no-cover {
+    width: 100%;
+    height: 200px;
+    background: #e5e7eb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.trade-popup-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+    text-align: center;
+    line-height: 1.3;
+    width: 100%;
+}
+
+.trade-popup-author {
+    font-size: 11px;
+    color: #6b7280;
+    text-align: center;
+    width: 100%;
+}
+
+.trade-popup-btn {
+    width: 100%;
+    padding: 8px 0;
+    border-radius: 8px;
+    border: none;
+    background: #c0392b;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.15s;
+    margin-top: 4px;
+    font-family: inherit;
+}
+
+.trade-popup-btn:hover {
+    background: #a93226;
+}
+
+.trade-popup-btn--remove {
+    background: transparent;
+    color: #9ca3af;
+    border: 1px solid #e5e7eb;
+}
+
+.trade-popup-btn--remove:hover {
+    background: #fef2f2;
+    color: #c0392b;
+    border-color: #fca5a5;
+}
+
+/* ── center cover placeholder ──────────────── */
+
+.trade-cover-placeholder {
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    box-shadow: 3px 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+.trade-cover-title {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-height: 90%;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    user-select: none;
 }

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import "./UserCarousel.css";
 
 function nameToHue(str) {
@@ -14,14 +15,18 @@ const FAN = {
   4: [{ r: -18, x: -42 }, { r: -6,  x: -14 }, { r: 6,   x: 14  }, { r: 18,  x: 42  }],
 };
 
-export default function UserCard({ name, thumbnails = [], listingCount = 0 }) {
+export default function UserCard({ id, name, thumbnails = [], listingCount = 0 }) {
+  const navigate = useNavigate();
   const count = Math.min(thumbnails.length, 4);
   const positions = FAN[count];
   const hue = nameToHue(name || "user");
   const fanBg = `linear-gradient(150deg, hsl(${hue},50%,88%) 0%, hsl(${(hue + 30) % 360},45%,82%) 100%)`;
 
   return (
-    <div className="user-card">
+    <div
+      className="user-card"
+      onClick={() => navigate('/trade', { state: { theirUserId: id, theirName: name, prefillAll: true } })}
+    >
       <div className="user-card-fan" style={{ background: fanBg }}>
         {count === 0 ? (
           <div className="user-card-fan-empty" />

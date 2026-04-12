@@ -1,4 +1,4 @@
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { getBookById, SAMPLE_BOOKS } from "../data/books";
 import BookCarousel from "../components/BookCarousel";
 import "./BookDetailsPage.css";
@@ -7,6 +7,7 @@ export default function BookDetailsPage() {
   const { bookId } = useParams();
   const location = useLocation();
   const book = location.state?.book ?? getBookById(bookId);
+  const navigate = useNavigate();
 
   if (!book) {
     return (
@@ -98,7 +99,19 @@ export default function BookDetailsPage() {
           )}
 
           <div className="book-details-actions">
-            <button type="button" className="book-details-primary-btn">Propose a Trade</button>
+            <button
+              type="button"
+              className="book-details-primary-btn"
+              onClick={() => navigate('/trade', {
+                state: {
+                  theirUserId:      book.sellerId,
+                  theirName:        book.seller,
+                  prefilledGoogleId: book.id,
+                },
+              })}
+            >
+              Propose a Trade
+            </button>
           </div>
         </div>
 
