@@ -5,36 +5,9 @@ import topArrow from '../assets/top_arrow.png'
 import bottomArrow from '../assets/bottom_arrow.png'
 import removeIcon from '../assets/remove.png'
 import { supabase } from '../lib/supabaseClient'
-
-// ── Spine helpers ─────────────────────────────────────────────────────────────
-
-const SPINE_COLORS = [
-    "#1e3a5f", "#3b1f5e", "#1f5e3b", "#5e3b1f", "#5e1f1f",
-    "#1f4a5e", "#4a2060", "#1a5632", "#7d3c00", "#1b2631",
-    "#283747", "#512e5f", "#145a32", "#6e2f0a", "#4a0e0e",
-    "#0b3d40", "#3d2b0b", "#2b0b3d", "#0b3d1a", "#3d0b2b",
-]
-
-function hashStr(str = '') {
-    let h = 0
-    for (let i = 0; i < str.length; i++)
-        h = (str.charCodeAt(i) + ((h << 5) - h)) | 0
-    return Math.abs(h)
-}
-
-function spineColor(title) {
-    return SPINE_COLORS[hashStr(title) % SPINE_COLORS.length]
-}
-
-function spineDimensions(title) {
-    const h = hashStr(title)
-    const heights = [118, 124, 130, 136, 142, 128, 122, 126]
-    const widths  = [24, 28, 32, 34, 30, 26, 36, 22]
-    return {
-        height: heights[h % heights.length],
-        width:  widths[(h >> 4) % widths.length],
-    }
-}
+import { spineColor, spineDimensions } from '../utils/bookSpine'
+import { secureImageUrl } from '../utils/image'
+import { useAuthSession } from '../hooks/useAuthSession'
 
 const BOOKS_PER_SHELF = 5
 const MIN_SHELVES = 3
@@ -109,7 +82,7 @@ function FlyingBook({ src, title, startX, startY, endX, endY, delay, onLanded })
             <div ref={innerRef} style={{ width: 54, height: 76 }}>
                 {src ? (
                     <img
-                        src={src.replace('http://', 'https://')}
+                        src={secureImageUrl(src)}
                         alt={title}
                         style={{
                             width: '100%', height: '100%',
@@ -163,7 +136,7 @@ function SideBookcase({
                                 )}
                                 {shelfBooks.map((entry) => {
                                     const book = entry.book
-                                    const { height, width } = spineDimensions(book.title)
+                                    const { height, width } = spineDimensions(book.title, 'small')
                                     const color = spineColor(book.title)
                                     const selected = isSelected(entry)
                                     return (
@@ -183,7 +156,7 @@ function SideBookcase({
                                 })}
                                 {isLast && receivedForLastShelf.map((entry) => {
                                     const book = entry.book
-                                    const { height, width } = spineDimensions(book.title)
+                                    const { height, width } = spineDimensions(book.title, 'small')
                                     const color = spineColor(book.title)
                                     return (
                                         <div key={`recv-${entry.id}`} className="side-book side-book--received">
@@ -230,7 +203,7 @@ function BookShelf({ offer, onRemove, onRemoveAll, label, flying, shelfRef }) {
                     >
                         {entry.book.thumbnail ? (
                             <img
-                                src={entry.book.thumbnail.replace('http://', 'https://')}
+                                src={secureImageUrl(entry.book.thumbnail)}
                                 alt={entry.book.title}
                                 className="book-cover"
                             />
@@ -263,7 +236,7 @@ export default function TradePage() {
         prefillAll,
     } = location.state || {}
 
-    const [session, setSession]             = useState(null)
+    const { session } = useAuthSession()
     const [myListings, setMyListings]       = useState([])
     const [theirListings, setTheirListings] = useState([])
     const [theirName]                       = useState(initTheirName || '')
@@ -288,13 +261,6 @@ export default function TradePage() {
     const [popupSide, setPopupSide]       = useState(null)
     const leaveTimer = useRef(null)
     const hoveredEl  = useRef(null)
-
-    // Auth
-    useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s))
-        return () => subscription.unsubscribe()
-    }, [])
 
     // My listings
     useEffect(() => {
@@ -559,7 +525,7 @@ export default function TradePage() {
                 >
                     {hoveredEntry.book.thumbnail ? (
                         <img
-                            src={hoveredEntry.book.thumbnail.replace('http://', 'https://')}
+                            src={secureImageUrl(hoveredEntry.book.thumbnail)}
                             alt="cover"
                             className="trade-popup-cover"
                         />

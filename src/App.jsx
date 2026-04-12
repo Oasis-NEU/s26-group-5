@@ -16,6 +16,24 @@ function ScrollToTop() {
   return null;
 }
 
+const PAGE_TITLES = {
+  "/":               "BookX — Home",
+  "/browse":         "BookX — Browse",
+  "/trade":          "BookX — Trade",
+  "/library":        "BookX — My Library",
+  "/trade-requests": "BookX — Trade Requests",
+  "/add-book":       "BookX — Add Book",
+  "/search":         "BookX — Search",
+};
+
+function TitleManager() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    document.title = PAGE_TITLES[pathname] ?? "BookX";
+  }, [pathname]);
+  return null;
+}
+
 // Forces AddBookPage to fully remount on every navigation to /add-book,
 // giving a clean form state without effects fighting against the router.
 function KeyedAddBook() {
@@ -36,6 +54,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <TitleManager />
       <Routes>
 
         {/*Navbar pages*/}

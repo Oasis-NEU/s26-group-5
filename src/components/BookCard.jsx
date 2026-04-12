@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { secureImageUrl } from "../utils/image";
 import "./BookCard.css";
 
 export default function BookCard({
@@ -18,7 +19,7 @@ export default function BookCard({
     <Link to={`/books/${id}`} state={{ book: { id, title, author, condition, thumbnail, pageCount, publishedDate, genre, seller, coverColor, ...book } }} className="book-card-link">
       <article className="book-card">
         {thumbnail ? (
-          <img src={thumbnail.replace("http://", "https://")} alt={title} className="book-cover-img" />
+          <img src={secureImageUrl(thumbnail)} alt={title} className="book-cover-img" />
         ) : (
           <div className="book-cover-artwork" style={{ backgroundColor: coverColor }}>
             <span className="book-cover-label">Cover</span>

@@ -29,13 +29,9 @@
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background-color: #c0392b;
-  color: #fff;
-  font-weight: 800;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
 }
 
 .footer-logo-text {

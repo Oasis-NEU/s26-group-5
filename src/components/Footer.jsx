@@ -1,3 +1,4 @@
+import bxLogo from "../assets/bx.png";
 import "./Footer.css";
 
 export default function Footer() {
@@ -8,7 +9,7 @@ export default function Footer() {
         {/* Brand */}
         <div className="footer-brand">
           <div className="footer-logo">
-            <div className="footer-logo-icon">Bx</div>
+            <img src={bxLogo} alt="BookX" className="footer-logo-icon" />
             <span className="footer-logo-text">BookX</span>
           </div>
           <p className="footer-tagline">

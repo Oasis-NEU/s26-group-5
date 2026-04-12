@@ -1,6 +1,7 @@
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { getBookById, SAMPLE_BOOKS } from "../data/books";
 import BookCarousel from "../components/BookCarousel";
+import { secureImageUrl } from "../utils/image";
 import "./BookDetailsPage.css";
 
 export default function BookDetailsPage() {
@@ -44,7 +45,7 @@ export default function BookDetailsPage() {
           <div className="book-details-cover" style={{ backgroundColor: book.thumbnail ? "transparent" : book.coverColor }}>
             {book.thumbnail ? (
               <img
-                src={book.thumbnail.replace("http://", "https://")}
+                src={secureImageUrl(book.thumbnail)}
                 alt={book.title}
                 className="book-details-cover-img"
               />
