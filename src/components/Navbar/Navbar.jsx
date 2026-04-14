@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Auth from "./Auth";
-import { searchBooks } from "../api/googleBooks";
-import { supabase } from "../lib/supabaseClient";
-import { useAuthSession } from "../hooks/useAuthSession";
-import bxLogo from "../assets/bx.png";
+import Auth from "../Auth/Auth";
+import { searchBooks } from "../../api/googleBooks";
+import { supabase } from "../../lib/supabaseClient";
+import { useAuthSession } from "../../hooks/useAuthSession";
+import bxLogo from "../../assets/bx.png";
 import "./Navbar.css";
 
 const GENRES = ["Mystery", "Romance", "Fiction", "Horror", "Sci-Fi", "Textbooks"];
@@ -172,7 +172,7 @@ export default function Navbar() {
               })}
             </ul>
           )}
-        </div>{/*  */}
+        </div>
 
         {/* Add Books */}
         <button className="navbar-action-btn" onClick={() => navigate("/add-book")}>

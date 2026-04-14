@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import PublicLayout from "./layouts/PublicLayout";
-import AuthLayout from "./layouts/AuthLayout";
-import HomePage from "./pages/HomePage";
-import BookDetailsPage from "./pages/BookDetailsPage";
-import TradePage from "./pages/TradePage";
-import MyBooksPage from "./pages/MyBooksPage";
-import TradeRequestsPage from "./pages/TradeRequestsPage";
-import SearchResultsPage from "./pages/SearchResultsPage";
-import AddBookPage from "./pages/AddBookPage";
+import PublicLayout from "./layouts/PublicLayout/PublicLayout";
+import AuthLayout from "./layouts/AuthLayout/AuthLayout";
+import HomePage from "./pages/HomePage/HomePage";
+import BookDetailsPage from "./pages/BookDetailsPage/BookDetailsPage";
+import TradePage from "./pages/TradePage/TradePage";
+import MyBooksPage from "./pages/MyBooksPage/MyBooksPage";
+import TradeRequestsPage from "./pages/TradeRequestsPage/TradeRequestsPage";
+import SearchResultsPage from "./pages/SearchResultsPage/SearchResultsPage";
+import AddBookPage from "./pages/AddBookPage/AddBookPage";
 
 function ScrollToTop() {
   const { pathname } = useLocation();

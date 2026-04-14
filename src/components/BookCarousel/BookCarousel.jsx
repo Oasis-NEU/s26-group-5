@@ -1,5 +1,5 @@
-import { useCarousel } from "../hooks/useCarousel";
-import BookCard from "./BookCard";
+import { useCarousel } from "../../hooks/useCarousel";
+import BookCard from "../BookCard/BookCard";
 import "./BookCarousel.css";
 
 export default function BookCarousel({ id, title, description, books }) {

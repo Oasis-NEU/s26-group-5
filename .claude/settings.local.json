@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"border-radius\\\\|box-shadow\\\\|padding\\\\|margin\" /c/Users/ethan/Oasis/s26-group-5/src/components/*.css)",
+      "Bash(ls -la /c/Users/ethan/Oasis/s26-group-5/src/components/*.css)",
+      "Bash(ls -la /c/Users/ethan/Oasis/s26-group-5/src/pages/*.css)",
+      "Bash(mkdir -p src/components/Auth src/components/Banner src/components/BookCard src/components/BookCarousel src/components/BookCover src/components/Footer src/components/HeroPoster src/components/Navbar src/components/UserCard src/components/UserCarousel)",
+      "Bash(mkdir -p src/layouts/AuthLayout src/layouts/PublicLayout)",
+      "Bash(mkdir -p src/pages/AddBookPage src/pages/BookDetailsPage src/pages/BookSearchPage src/pages/HomePage src/pages/MyBooksPage src/pages/SearchResultsPage src/pages/TradePage src/pages/TradeRequestsPage)",
+      "Bash(grep -rn \"from \\\\\"../components/\" src/)",
+      "Bash(grep -rn \"from \\\\\"../lib/\" src/)",
+      "Bash(grep -rn \"from \\\\\"../utils/\" src/pages/ src/components/)",
+      "Bash(grep -rn \"from \\\\\"../hooks/\" src/pages/ src/components/)",
+      "Bash(grep -rn \"from \\\\\"../api/\" src/pages/ src/components/)",
+      "Bash(npm run:*)"
+    ]
+  }
+}

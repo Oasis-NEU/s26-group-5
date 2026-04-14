@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
-import { searchBooks } from "../api/googleBooks";
+import { supabase } from "../../lib/supabaseClient";
+import { searchBooks } from "../../api/googleBooks";
+import { useAuthSession } from "../../hooks/useAuthSession";
 import "./AddBookPage.css";
 
 const CONDITIONS = ["Like New", "Good", "Acceptable"];
@@ -15,6 +16,7 @@ export default function AddBookPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { session } = useAuthSession();
 
   // Search
   const [query, setQuery] = useState(searchParams.get("q") || "");
@@ -102,11 +104,17 @@ export default function AddBookPage() {
   useEffect(() => {
     const q = searchParams.get("q");
     if (!q) return;
-    setSearching(true);
-    searchBooks(q, 6)
-      .then(setResults)
-      .catch(() => setResults([]))
-      .finally(() => setSearching(false));
+    async function run() {
+      setSearching(true);
+      try {
+        setResults(await searchBooks(q, 6));
+      } catch {
+        setResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }
+    run();
   }, []);
 
   // Debounced auto-search as you type
@@ -162,7 +170,6 @@ export default function AddBookPage() {
     setSubmitting(true);
     setSubmitError(null);
 
-    const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       setSubmitError("You must be logged in to add a book.");
       setSubmitting(false);
@@ -290,7 +297,6 @@ export default function AddBookPage() {
   const isListingMode      = !isEditMode && !isEditListingMode && (destination === "trade" || fromLibrary);
   const canSubmit          = !!selectedBook && (!isListingMode || sellerNotes.trim().length > 0);
 
-  // ── Success screen ────────────────────────────────────────
   if (submitted) {
     const destinationMsg = (isEditMode || isEditListingMode)
       ? "Your changes have been saved."
@@ -317,7 +323,6 @@ export default function AddBookPage() {
     );
   }
 
-  // ── Main page ─────────────────────────────────────────────
   return (
     <div className="add-book-page">
       <div className="add-book-inner">

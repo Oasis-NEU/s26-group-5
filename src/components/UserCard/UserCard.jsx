@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./UserCarousel.css";
+import "../UserCarousel/UserCarousel.css";
 
 function nameToHue(str) {
   let h = 0;

@@ -1,5 +1,5 @@
-import { useCarousel } from "../hooks/useCarousel";
-import UserCard from "./UserCard";
+import { useCarousel } from "../../hooks/useCarousel";
+import UserCard from "../UserCard/UserCard";
 import "./UserCarousel.css";
 
 export default function UserCarousel({ users }) {

@@ -1,13 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
-import { spineColor, spineDimensions } from "../utils/bookSpine";
-import { secureImageUrl } from "../utils/image";
-import { useAuthSession } from "../hooks/useAuthSession";
+import { supabase } from "../../lib/supabaseClient";
+import { spineColor, spineDimensions } from "../../utils/bookSpine";
+import { secureImageUrl } from "../../utils/image";
+import { createShelves } from "../../utils/shelf";
+import { computePopupStyle } from "../../utils/popup";
+import { useAuthSession } from "../../hooks/useAuthSession";
+import { useHoverPopup } from "../../hooks/useHoverPopup";
 import "./MyBooksPage.css";
 
 const BOOKS_PER_SHELF = 12;
 const MIN_SHELVES = 3;
+const POPUP_W = 210;
+const POPUP_H = 360;
 
 const STATUS_COLORS = {
   active:  "#16a34a",
@@ -15,62 +20,28 @@ const STATUS_COLORS = {
   traded:  "#6b7280",
 };
 
-
-const POPUP_W = 210;
-const POPUP_H = 360;
-
-function computePopupStyle(rect) {
-  if (!rect) return {};
-  let left = rect.left + rect.width / 2 - POPUP_W / 2;
-  left = Math.max(8, Math.min(left, window.innerWidth - POPUP_W - 8));
-  let top = rect.top - POPUP_H;
-  if (top < 8) top = rect.bottom;
-  return { top, left };
-}
-
 export default function MyBooksPage() {
   const navigate = useNavigate();
-
   const { session, loading: authLoading } = useAuthSession();
+  const { hoveredEntry, setHoveredEntry, popupRect, onEnter, onLeave, onPopupEnter, onPopupLeave } = useHoverPopup();
 
   // Tabs
   const [activeTab, setActiveTab] = useState("books");
 
   // My Books
-  const [books, setBooks]   = useState([]);
+  const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // My Listings
-  const [listings, setListings]               = useState([]);
+  const [listings, setListings] = useState([]);
   const [loadingListings, setLoadingListings] = useState(false);
 
   // Incoming pending trades (books I may receive)
   const [incomingTrades, setIncomingTrades] = useState([]);
 
-
-
-  // Hover popup
-  const [hoveredEntry, setHoveredEntry] = useState(null);
-  const [popupRect, setPopupRect]       = useState(null);
-  const leaveTimer = useRef(null);
-  const hoveredEl  = useRef(null);
-
-  // ── Clear data on sign-out ────────────────────────────────
   useEffect(() => {
     if (!session) { setBooks([]); setListings([]); }
   }, [session]);
-
-  // Track hovered spine position on scroll
-  useEffect(() => {
-    if (!hoveredEntry) return;
-    function onScroll() {
-      if (hoveredEl.current)
-        setPopupRect(hoveredEl.current.getBoundingClientRect());
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [hoveredEntry]);
-
 
   useEffect(() => {
     if (session) {
@@ -79,8 +50,6 @@ export default function MyBooksPage() {
       fetchIncomingTrades();
     }
   }, [session]);
-
-  // ── Fetch ─────────────────────────────────────────────────
 
   async function fetchBooks() {
     setLoading(true);
@@ -121,8 +90,6 @@ export default function MyBooksPage() {
     );
   }
 
-  // ── Edit book ─────────────────────────────────────────────
-
   function editBook(entry) {
     setHoveredEntry(null);
     navigate("/add-book", {
@@ -136,8 +103,6 @@ export default function MyBooksPage() {
       },
     });
   }
-
-  // ── Edit listing ──────────────────────────────────────────
 
   function editListing(entry) {
     setHoveredEntry(null);
@@ -153,11 +118,8 @@ export default function MyBooksPage() {
     });
   }
 
-  // ── Unlist (move listing → library) ───────────────────────
-
   async function unlistBook(entry) {
     setHoveredEntry(null);
-    const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
     const { error: insertError } = await supabase
       .from("user_books")
@@ -170,16 +132,12 @@ export default function MyBooksPage() {
     setListings((prev) => prev.filter((l) => l.id !== entry.id));
   }
 
-  // ── List for Trade ────────────────────────────────────────
-
   function listForTrade(entry) {
     setHoveredEntry(null);
     navigate("/add-book", {
       state: { book: entry.book, condition: entry.condition, notes: entry.notes, userBookId: entry.id },
     });
   }
-
-  // ── Remove ────────────────────────────────────────────────
 
   async function removeBook(entryId) {
     setHoveredEntry(null);
@@ -192,31 +150,10 @@ export default function MyBooksPage() {
     setListings((prev) => prev.filter((l) => l.id !== listingId));
   }
 
-  // ── Hover handlers ────────────────────────────────────────
-
-  function onBookEnter(entry, e) {
-    clearTimeout(leaveTimer.current);
-    hoveredEl.current = e.currentTarget;
-    setHoveredEntry(entry);
-    setPopupRect(e.currentTarget.getBoundingClientRect());
-  }
-
-  function onBookLeave() {
-    leaveTimer.current = setTimeout(() => setHoveredEntry(null), 120);
-  }
-
-  function onPopupEnter() { clearTimeout(leaveTimer.current); }
-  function onPopupLeave() {
-    leaveTimer.current = setTimeout(() => setHoveredEntry(null), 120);
-  }
-
   if (authLoading) return null;
 
-  const shelves = [];
-  for (let i = 0; i < books.length; i += BOOKS_PER_SHELF)
-    shelves.push(books.slice(i, i + BOOKS_PER_SHELF));
-  while (shelves.length < MIN_SHELVES) shelves.push([]);
-  // Append incoming pending trades to the last shelf of My Books
+  // Build shelves
+  const shelves = createShelves(books, BOOKS_PER_SHELF, MIN_SHELVES);
   if (incomingTrades.length > 0) {
     const last = shelves[shelves.length - 1];
     const combined = [...last, ...incomingTrades];
@@ -224,18 +161,12 @@ export default function MyBooksPage() {
     for (let i = BOOKS_PER_SHELF; i < combined.length; i += BOOKS_PER_SHELF)
       shelves.push(combined.slice(i, i + BOOKS_PER_SHELF));
   }
-
-  const listingShelves = [];
-  for (let i = 0; i < listings.length; i += BOOKS_PER_SHELF)
-    listingShelves.push(listings.slice(i, i + BOOKS_PER_SHELF));
-  while (listingShelves.length < MIN_SHELVES) listingShelves.push([]);
+  const listingShelves = createShelves(listings, BOOKS_PER_SHELF, MIN_SHELVES);
 
   const isAlreadyListed = hoveredEntry
     ? listings.some((l) => l.book?.id === hoveredEntry.book.id)
     : false;
-  const popupStyle = computePopupStyle(popupRect);
-
-  // ── Render ────────────────────────────────────────────────
+  const popupStyle = computePopupStyle(popupRect, POPUP_W, POPUP_H);
 
   return (
     <div className="lib-page">
@@ -247,7 +178,7 @@ export default function MyBooksPage() {
         </button>
       )}
 
-      {/* ── Header ── */}
+      {/* Header */}
       <div className="lib-header">
         <div className="lib-header-inner">
           <h1 className="lib-page-title">My Library</h1>
@@ -257,24 +188,20 @@ export default function MyBooksPage() {
               onClick={() => setActiveTab("books")}
             >
               My Books
-              {books.length > 0 && (
-                <span className="lib-tab-count">{books.length}</span>
-              )}
+              {books.length > 0 && <span className="lib-tab-count">{books.length}</span>}
             </button>
             <button
               className={`lib-tab${activeTab === "listings" ? " active" : ""}`}
               onClick={() => setActiveTab("listings")}
             >
               My Listings
-              {listings.length > 0 && (
-                <span className="lib-tab-count">{listings.length}</span>
-              )}
+              {listings.length > 0 && <span className="lib-tab-count">{listings.length}</span>}
             </button>
           </div>
         </div>
       </div>
 
-      {/* ── My Books Tab ── */}
+      {/* My Books Tab */}
       {activeTab === "books" && (
         <div className="lib-shelves">
           <div className="bookcase-outer">
@@ -297,15 +224,13 @@ export default function MyBooksPage() {
                     {shelfBooks.map((entry) => {
                       const book = entry.book;
                       const { height, width } = spineDimensions(book.title);
-                      const color    = spineColor(book.title);
-                      const isActive = hoveredEntry?.id === entry.id;
-
+                      const color = spineColor(book.title);
                       return (
                         <div
-                          className={`book${isActive ? " book-active" : ""}`}
+                          className={`book${hoveredEntry?.id === entry.id ? " book-active" : ""}`}
                           key={entry.id}
-                          onMouseEnter={(e) => onBookEnter(entry, e)}
-                          onMouseLeave={onBookLeave}
+                          onMouseEnter={(e) => onEnter(entry, e)}
+                          onMouseLeave={onLeave}
                         >
                           <div className="book-spine" style={{ background: color, height, width }}>
                             <span className="book-spine-title">{book.title}</span>
@@ -324,7 +249,7 @@ export default function MyBooksPage() {
         </div>
       )}
 
-      {/* ── My Listings Tab ── */}
+      {/* My Listings Tab */}
       {activeTab === "listings" && (
         <div className="lib-shelves">
           <div className="bookcase-outer">
@@ -347,15 +272,13 @@ export default function MyBooksPage() {
                     {shelfListings.map((entry) => {
                       const book = entry.book;
                       const { height, width } = spineDimensions(book.title);
-                      const color    = spineColor(book.title);
-                      const isActive = hoveredEntry?.id === entry.id;
-
+                      const color = spineColor(book.title);
                       return (
                         <div
-                          className={`book${isActive ? " book-active" : ""}`}
+                          className={`book${hoveredEntry?.id === entry.id ? " book-active" : ""}`}
                           key={entry.id}
-                          onMouseEnter={(e) => onBookEnter(entry, e)}
-                          onMouseLeave={onBookLeave}
+                          onMouseEnter={(e) => onEnter(entry, e)}
+                          onMouseLeave={onLeave}
                         >
                           <div className="book-spine" style={{ background: color, height, width }}>
                             <span className="book-spine-title">{book.title}</span>

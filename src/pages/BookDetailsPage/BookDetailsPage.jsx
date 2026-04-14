@@ -1,7 +1,7 @@
 import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
-import { getBookById, SAMPLE_BOOKS } from "../data/books";
-import BookCarousel from "../components/BookCarousel";
-import { secureImageUrl } from "../utils/image";
+import { getBookById, SAMPLE_BOOKS } from "../../data/books";
+import BookCarousel from "../../components/BookCarousel/BookCarousel";
+import { secureImageUrl } from "../../utils/image";
 import "./BookDetailsPage.css";
 
 export default function BookDetailsPage() {

@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
-import BookCarousel from "../components/BookCarousel";
-import UserCarousel from "../components/UserCarousel";
-import HeroPoster from "../components/HeroPoster";
-import Banner from "../components/Banner";
-import { supabase } from "../lib/supabaseClient";
-import { secureImageUrl } from "../utils/image";
+import BookCarousel from "../../components/BookCarousel/BookCarousel";
+import UserCarousel from "../../components/UserCarousel/UserCarousel";
+import HeroPoster from "../../components/HeroPoster/HeroPoster";
+import Banner from "../../components/Banner/Banner";
+import { supabase } from "../../lib/supabaseClient";
+import { secureImageUrl } from "../../utils/image";
 import "./HomePage.css";
 
 const GENRE_MAP = {

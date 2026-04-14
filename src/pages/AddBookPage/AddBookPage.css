@@ -5,13 +5,13 @@
   font-family: "Inter", "Segoe UI", system-ui, sans-serif;
 }
 
-/* ── Inner container ── */
+/* Inner container */
 .add-book-inner {
   max-width: 960px;
   margin: 0 auto;
 }
 
-/* ── Header ── */
+/* Header */
 .add-book-header {
   margin-bottom: 3.5vh;
 }
@@ -47,7 +47,7 @@
   color: #6b7280;
 }
 
-/* ── Search section ── */
+/* Search section */
 .add-book-section {
   background: #fff;
   border: 1px solid #e5e7eb;
@@ -76,7 +76,7 @@
   border-color: #3b2a1a;
 }
 
-/* ── Results list ── */
+/* Results list */
 .add-book-results {
   list-style: none;
   padding: 0;
@@ -151,7 +151,7 @@
   transition: opacity 0.15s;
 }
 
-/* ── Two-column form layout ── */
+/* Two-column form layout */
 .add-book-form-layout {
   display: grid;
   grid-template-columns: 210px 1fr;
@@ -159,7 +159,7 @@
   align-items: start;
 }
 
-/* ── Preview aside ── */
+/* Preview aside */
 .add-book-preview {
   position: sticky;
   top: 2vh;
@@ -241,7 +241,7 @@
   color: #374151;
 }
 
-/* ── Form right column ── */
+/* Form right column */
 .add-book-form {
   display: flex;
   flex-direction: column;
@@ -279,7 +279,7 @@
   font-size: 12px;
 }
 
-/* ── Condition ── */
+/* Condition */
 .abp-condition-btns {
   display: flex;
   gap: 8px;
@@ -313,7 +313,7 @@
   font-style: italic;
 }
 
-/* ── Seller notes textarea ── */
+/* Seller notes textarea */
 .add-book-textarea {
   width: 100%;
   padding: 10px 12px;
@@ -333,7 +333,7 @@
   border-color: #3b2a1a;
 }
 
-/* ── Photos ── */
+/* Photos */
 .add-book-photos {
   display: flex;
   flex-wrap: wrap;
@@ -410,7 +410,7 @@
   color: #a07850;
 }
 
-/* ── Where to add checkboxes ── */
+/* Where to add checkboxes */
 .add-book-checkboxes {
   display: flex;
   flex-direction: column;
@@ -460,7 +460,7 @@
   color: #dc2626;
 }
 
-/* ── Buttons ── */
+/* Buttons */
 .abp-btn-search {
   padding: 10px 22px;
   font-size: 14px;
@@ -524,7 +524,7 @@
   border-radius: 10px;
 }
 
-/* ── Success screen ── */
+/* Success screen */
 .add-book-success {
   max-width: 420px;
   margin: 10vh auto;

@@ -1,4 +1,4 @@
-/* ── Library Page ─────────────────────────────────────────── */
+/* Library Page */
 .lib-page {
   min-height: 100vh;
   background: #f9fafb;
@@ -6,7 +6,7 @@
   color: #2c1f0e;
 }
 
-/* ── Floating Add Book button ─────────────────────────────── */
+/* Floating Add Book button */
 .lib-fab-add {
   position: fixed;
   bottom: 32px;
@@ -29,7 +29,7 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
 }
 
-/* ── Buttons ──────────────────────────────────────────────── */
+/* Buttons */
 .btn-primary {
   padding: 8px 18px;
   font-size: 14px;
@@ -67,7 +67,7 @@
   border-color: #c8b49a;
 }
 
-/* ── Search Panel (fixed overlay) ────────────────────────── */
+/* Search Panel (fixed overlay) */
 .lib-search-panel {
   position: fixed;
   top: 50%;
@@ -580,7 +580,7 @@
   z-index: 1;
 }
 
-/* ── Hover Phase 1: spine rises (triggered by .book-active class from React) ── */
+/* Hover Phase 1: spine rises (triggered by .book-active class from React) */
 .book-active .book-spine {
   transform: translateY(-28px) rotateX(4deg);
   box-shadow: -3px 0 10px rgba(0, 0, 0, 0.3),

@@ -1,29 +1,8 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabaseClient'
-import { spineColor } from '../utils/bookSpine'
-import { secureImageUrl } from '../utils/image'
-import { useAuthSession } from '../hooks/useAuthSession'
-import './TradeRequestsPage.css'
-
-function BookCover({ book }) {
-  if (book?.thumbnail) {
-    return (
-      <img
-        src={secureImageUrl(book.thumbnail)}
-        alt={book.title}
-        className="tr-book-cover"
-      />
-    )
-  }
-  return (
-    <div
-      className="tr-book-cover tr-book-cover--placeholder"
-      style={{ background: spineColor(book?.title || 'x') }}
-    >
-      <span className="tr-book-cover-title">{book?.title}</span>
-    </div>
-  )
-}
+import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabaseClient";
+import { useAuthSession } from "../../hooks/useAuthSession";
+import BookCover from "../../components/BookCover/BookCover";
+import "./TradeRequestsPage.css";
 
 export default function TradeRequestsPage() {
   const { session } = useAuthSession()
@@ -194,7 +173,7 @@ export default function TradeRequestsPage() {
                   <p className="tr-side-label">They offer</p>
                   <div className="tr-books">
                     {trade.theirBooks.map((row) => (
-                      <BookCover key={row.id} book={row.book} />
+                      <BookCover key={row.id} book={row.book} className="tr-book-cover" placeholderClassName="tr-book-cover--placeholder" titleClassName="tr-book-cover-title" />
                     ))}
                     {trade.theirBooks.length === 0 && <span className="tr-no-books">—</span>}
                   </div>
@@ -210,7 +189,7 @@ export default function TradeRequestsPage() {
                   <p className="tr-side-label">You give</p>
                   <div className="tr-books">
                     {trade.myBooks.map((row) => (
-                      <BookCover key={row.id} book={row.book} />
+                      <BookCover key={row.id} book={row.book} className="tr-book-cover" placeholderClassName="tr-book-cover--placeholder" titleClassName="tr-book-cover-title" />
                     ))}
                     {trade.myBooks.length === 0 && <span className="tr-no-books">—</span>}
                   </div>

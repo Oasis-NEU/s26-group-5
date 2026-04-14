@@ -11,7 +11,7 @@
   margin: 0 auto;
 }
 
-/* ── Header ─────────────────────────────────── */
+/* Header */
 
 .tr-header {
   display: flex;
@@ -39,7 +39,7 @@
   padding: 3px 10px;
 }
 
-/* ── Empty state ─────────────────────────────── */
+/* Empty state */
 
 .tr-empty-state {
   display: flex;
@@ -56,7 +56,7 @@
   margin: 0;
 }
 
-/* ── Trade list ──────────────────────────────── */
+/* Trade list */
 
 .tr-list {
   display: flex;
@@ -64,7 +64,7 @@
   gap: 1.25rem;
 }
 
-/* ── Trade card ──────────────────────────────── */
+/* Trade card */
 
 .tr-card {
   background: #ffffff;
@@ -105,7 +105,7 @@
   font-family: monospace;
 }
 
-/* ── Card body ───────────────────────────────── */
+/* Card body */
 
 .tr-card-body {
   display: flex;
@@ -179,7 +179,7 @@
   padding: 0 0.25rem;
 }
 
-/* ── Actions ─────────────────────────────────── */
+/* Actions */
 
 .tr-card-actions {
   display: flex;
@@ -235,7 +235,7 @@
   transform: translateY(0);
 }
 
-/* ── Waiting state ───────────────────────────── */
+/* Waiting state */
 
 .tr-waiting-label {
   display: flex;

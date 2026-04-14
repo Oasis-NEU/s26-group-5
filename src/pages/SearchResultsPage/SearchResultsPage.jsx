@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
-import { searchBooks } from "../api/googleBooks";
+import { useSearchParams } from "react-router-dom";
+import { searchBooks } from "../../api/googleBooks";
 import "./SearchResultsPage.css";
 
 export default function SearchResultsPage() {
@@ -13,12 +13,18 @@ export default function SearchResultsPage() {
 
   useEffect(() => {
     if (!query) return;
-    setLoading(true);
-    setError(null);
-    searchBooks(query)
-      .then(setResults)
-      .catch(() => setError("Something went wrong. Please try again."))
-      .finally(() => setLoading(false));
+    async function run() {
+      setLoading(true);
+      setError(null);
+      try {
+        setResults(await searchBooks(query));
+      } catch {
+        setError("Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    run();
   }, [query]);
 
   return (

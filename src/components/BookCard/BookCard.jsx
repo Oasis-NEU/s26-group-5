@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { secureImageUrl } from "../utils/image";
+import { secureImageUrl } from "../../utils/image";
 import "./BookCard.css";
 
 export default function BookCard({

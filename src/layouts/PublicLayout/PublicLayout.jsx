@@ -2,8 +2,8 @@
 website will use this layout and it includes the navbar and footer */
 
 import { Outlet, useLocation } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import Navbar from "../../components/Navbar/Navbar";
+import Footer from "../../components/Footer/Footer";
 import "./PublicLayout.css";
 
 function PublicLayout() {

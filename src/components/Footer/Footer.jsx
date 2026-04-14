@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import bxLogo from "../assets/bx.png";
+import bxLogo from "../../assets/bx.png";
 import "./Footer.css";
 
 export default function Footer() {
