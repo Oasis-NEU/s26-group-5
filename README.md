@@ -4,6 +4,8 @@ A peer-to-peer book trading platform where readers can list books from their col
 
 Built by Oasis @ Northeastern, Spring 2026 — Group 5.
 
+Deployment: https://bookexg.netlify.app/
+
 ---
 
 ## Features
